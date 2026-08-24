@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       ctx.globalAlpha = 1;
     }
-    function spawn() { shootingStars.push({ x: rand(width*0.1, width*0.9), y: rand(0, height*0.35), vx: rand(3.5,6.5), vy: rand(2.4,4.2), life: 1, decay: rand(0.008,0.016), length: rand(60,130) }); }
+    function spawn() { const sx=rand(0,width), sy=rand(0,height), dir=Math.random()*Math.PI*2, spd=rand(5,9); shootingStars.push({ x:sx, y:sy, vx:Math.cos(dir)*spd, vy:Math.sin(dir)*spd, life:1, decay:rand(0.008,0.016), length:rand(60,130) }); }
     function drawShooting() {
       for (let i = shootingStars.length-1; i >= 0; i--) {
         const s = shootingStars[i]; s.x += s.vx; s.y += s.vy; s.life -= s.decay;
