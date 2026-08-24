@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ferramentas KODAROS — Calculadoras e geradores gratuitos</title>
+<meta name="description" content="Ferramentas gratuitas da KODAROS: calculadoras de aquisição, lançamento, financeiro, vendas, suporte e gestão. 100% client-side, sem IA.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta property="og:title" content="Ferramentas KODAROS">
+<meta property="og:description" content="Calculadoras e geradores gratuitos, citáveis nos e-books KODAROS.">
+<meta property="og:image" content="https://kelvinoliveiracode.github.io/kodarosferramentas/kodaros_logo.png">
+<link rel="icon" href="kodaros_icon.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <div class="brand-row">
+      <img src="kodaros_logo.png" alt="KODAROS">
+      <span class="word">FERRAMENTAS</span>
+    </div>
+    <div class="page-intro">
+      <span class="eyebrow">Gratuito • Sem IA • Client-side</span>
+      <h1>Ferramentas para o seu negócio crescer</h1>
+      <p>Calculadoras e geradores determinísticos, citáveis nos e-books da KODAROS. Use quantas vezes quiser — tudo roda no seu navegador.</p>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs container" id="tabs">
+  <button class="tab-btn active" data-tab="aquisicao">Aquisição &amp; Tráfego</button>
+  <button class="tab-btn" data-tab="lancamento">Lançamento</button>
+  <button class="tab-btn" data-tab="financeiro">Financeiro</button>
+  <button class="tab-btn" data-tab="vendas">Vendas</button>
+  <button class="tab-btn" data-tab="suporte">Suporte &amp; Transformação</button>
+  <button class="tab-btn" data-tab="operacao">Operação &amp; Gestão</button>
+</nav>
+
+<main class="container">
+
+  <!-- ============ TAB 1: AQUISIÇÃO & TRÁFEGO ============ -->
+  <section class="tab-panel active" id="aquisicao">
+    <div class="panel-head">
+      <h2>Aquisição &amp; Tráfego</h2>
+      <p>Medir saúde do funil, escala e eficiência de mídia paga.</p>
+      <span class="panel-cite">📚 Cita: Arquitetura de Aquisição · Tráfego Que Vende</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. CAC & LTV (portado) -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>CAC &amp; LTV</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+        <p class="tool-desc">Custo de aquisição, valor do cliente e se a relação está saudável (alvo LTV:CAC de 3:1).</p>
+        <div class="field row">
+          <div class="field"><label>Gasto em aquisição (R$)</label><input id="c1_gasto" type="number" value="5000"></div>
+          <div class="field"><label>Clientes adquiridos</label><input id="c1_cli" type="number" value="80"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="c1_ticket" type="number" value="180"></div>
+          <div class="field"><label>Frequência (compras/ano)</label><input id="c1_freq" type="number" value="1.5"></div>
+          <div class="field"><label>Retenção (meses)</label><input id="c1_ret" type="number" value="12"></div>
+          <div class="field"><label>Margem líquida (%)</label><input id="c1_marg" type="number" value="35"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcCAC()">Calcular</button>
+        <div class="result" id="c1_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="c1_cac">–</span><span class="l">CAC (R$)</span></div>
+            <div class="res"><span class="v" id="c1_ltv">–</span><span class="l">LTV (R$)</span></div>
+            <div class="res" id="c1_ratio_box"><span class="v" id="c1_ratio">–</span><span class="l">LTV:CAC</span></div>
+            <div class="res"><span class="v" id="c1_pay">–</span><span class="l">Payback (meses)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Projetor de Escala (portado) -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Projetor de Escala</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+        <p class="tool-desc">Simule receita e lucro ao aumentar o orçamento semanalmente.</p>
+        <div class="field row">
+          <div class="field"><label>CAC atual (R$)</label><input id="c2_cac" type="number" value="90"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="c2_ticket" type="number" value="180"></div>
+          <div class="field"><label>Margem líquida (%)</label><input id="c2_marg" type="number" value="35"></div>
+          <div class="field"><label>Orçamento inicial (R$/sem)</label><input id="c2_orc" type="number" value="2000"></div>
+          <div class="field"><label>Crescimento semanal (%)</label><input id="c2_cresc" type="number" value="15"></div>
+          <div class="field"><label>Semanas</label><input id="c2_sem" type="number" value="8"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcEscala()">Projetar</button>
+        <div class="result" id="c2_res">
+          <table class="tbl" id="c2_tbl"><thead><tr><th>Semana</th><th>Orçamento</th><th>Clientes</th><th>Receita</th><th>Lucro</th></tr></thead><tbody></tbody></table>
+          <div class="res-grid" style="margin-top:14px">
+            <div class="res"><span class="v" id="c2_tcli">–</span><span class="l">Total clientes</span></div>
+            <div class="res good"><span class="v" id="c2_trec">–</span><span class="l">Receita total</span></div>
+            <div class="res good"><span class="v" id="c2_tluc">–</span><span class="l">Lucro total</span></div>
+            <div class="res"><span class="v" id="c2_tgasto">–</span><span class="l">Gasto total</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Auditor de Funil (portado) -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Auditor de Funil</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+        <p class="tool-desc">Informe visitas e taxas de cada etapa. O gargalo (menor taxa) é destacado.</p>
+        <div class="field row">
+          <div class="field"><label>Visitas no topo</label><input id="c3_vis" type="number" value="10000"></div>
+          <div class="field"><label>Taxa etapa 1→2 (%)</label><input id="c3_t1" type="number" value="12"></div>
+          <div class="field"><label>Taxa etapa 2→3 (%)</label><input id="c3_t2" type="number" value="25"></div>
+          <div class="field"><label>Taxa etapa 3→4 (%)</label><input id="c3_t3" type="number" value="8"></div>
+          <div class="field"><label>Taxa etapa 4→venda (%)</label><input id="c3_t4" type="number" value="20"></div>
+          <div class="field"><label>Etapas (opcional)</label><input id="c3_nomes" value="Topo, Meio, Base, Carrinho, Venda"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcFunil()">Auditá-lo</button>
+        <div class="result" id="c3_res">
+          <table class="tbl" id="c3_tbl"><thead><tr><th>Etapa</th><th>Entraram</th><th>% conv.</th><th>Saíram</th></tr></thead><tbody></tbody></table>
+        </div>
+      </article>
+
+      <!-- 4. ROI / ROAS -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">4</span>
+          <div><h3>ROI de Tráfego Pago / ROAS</h3><span class="tool-ebook">Tráfego Que Vende</span></div></div>
+        <p class="tool-desc">Compare o investimento em mídia com a receita atribuída.</p>
+        <div class="field row">
+          <div class="field"><label>Investimento em mídia (R$)</label><input id="r_inv" type="number" value="2000"></div>
+          <div class="field"><label>Receita atribuída (R$)</label><input id="r_rec" type="number" value="9000"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcROAS()">Calcular</button>
+        <div class="result" id="r_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="r_roas">–</span><span class="l">ROAS</span></div>
+            <div class="res" id="r_roi_box"><span class="v" id="r_roi">–</span><span class="l">ROI (%)</span></div>
+            <div class="res"><span class="v" id="r_lucro">–</span><span class="l">Lucro (R$)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 5. Break-even -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">5</span>
+          <div><h3>Ponto de Equilíbrio de Campanha</h3><span class="tool-ebook">Tráfego Que Vende</span></div></div>
+        <p class="tool-desc">Quantas vendas sua campanha precisa para não perder dinheiro.</p>
+        <div class="field row">
+          <div class="field"><label>Custo fixo da campanha (R$)</label><input id="be_custo" type="number" value="5000"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="be_ticket" type="number" value="200"></div>
+          <div class="field"><label>Custo variável por venda (R$)</label><input id="be_cv" type="number" value="60"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcBreakEven()">Calcular</button>
+        <div class="result" id="be_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="be_mc">–</span><span class="l">Margem contrib. (R$)</span></div>
+            <div class="res" id="be_box"><span class="v" id="be_cli">–</span><span class="l">Vendas p/ equilíbrio</span></div>
+            <div class="res"><span class="v" id="be_rec">–</span><span class="l">Receita eq. (R$)</span></div>
+            <div class="res"><span class="v" id="be_roas">–</span><span class="l">Break-even ROAS</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 6. Conversor de Métricas -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">6</span>
+          <div><h3>Conversor de Métricas de Mídia</h3><span class="tool-ebook">Tráfego Que Vende</span></div></div>
+        <p class="tool-desc">Informe os dados base e veja CPM, CPC, CTR, CPA e CPL.</p>
+        <div class="field row">
+          <div class="field"><label>Impressões</label><input id="m_imp" type="number" value="100000"></div>
+          <div class="field"><label>Custo total (R$)</label><input id="m_custo" type="number" value="1200"></div>
+          <div class="field"><label>Cliques</label><input id="m_cli" type="number" value="3000"></div>
+          <div class="field"><label>Conversões (vendas)</label><input id="m_conv" type="number" value="150"></div>
+          <div class="field"><label>Leads</label><input id="m_lead" type="number" value="600"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcMetrica()">Converter</button>
+        <div class="result" id="m_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="m_cpm">–</span><span class="l">CPM (R$)</span></div>
+            <div class="res"><span class="v" id="m_cpc">–</span><span class="l">CPC (R$)</span></div>
+            <div class="res"><span class="v" id="m_ctr">–</span><span class="l">CTR (%)</span></div>
+            <div class="res"><span class="v" id="m_cpa">–</span><span class="l">CPA (R$)</span></div>
+            <div class="res"><span class="v" id="m_cpl">–</span><span class="l">CPL (R$)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 7. Planejador de Orçamento -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">7</span>
+          <div><h3>Planejador de Orçamento por Canal</h3><span class="tool-ebook">Tráfego Que Vende</span></div></div>
+        <p class="tool-desc">Distribui a verba entre Facebook, Google e TikTok por participação.</p>
+        <div class="field row">
+          <div class="field"><label>Orçamento total (R$)</label><input id="o_total" type="number" value="9000"></div>
+          <div class="field"><label>Facebook/Instagram (%)</label><input id="o_fb" type="number" value="40"></div>
+          <div class="field"><label>Google (%)</label><input id="o_gg" type="number" value="35"></div>
+          <div class="field"><label>TikTok (%)</label><input id="o_tk" type="number" value="25"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcOrcamento()">Distribuir</button>
+        <div class="result" id="o_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="o_fbv">–</span><span class="l">Facebook (R$)</span></div>
+            <div class="res"><span class="v" id="o_ggv">–</span><span class="l">Google (R$)</span></div>
+            <div class="res"><span class="v" id="o_tkv">–</span><span class="l">TikTok (R$)</span></div>
+            <div class="res"><span class="v" id="o_soma">–</span><span class="l">Soma (%)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 8. UTM Builder -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">8</span>
+          <div><h3>UTM Builder</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+        <p class="tool-desc">Gera links rastreáveis prontos para colar nas campanhas.</p>
+        <div class="field"><label>URL base</label><input id="u_url" value="https://kodaros.com/produto"></div>
+        <div class="field row">
+          <div class="field"><label>utm_source</label><input id="u_source" value="facebook"></div>
+          <div class="field"><label>utm_medium</label><input id="u_medium" value="paid"></div>
+          <div class="field"><label>utm_campaign</label><input id="u_camp" value="lancamento_2026"></div>
+          <div class="field"><label>utm_term</label><input id="u_term" placeholder="palavra-chave (opcional)"></div>
+          <div class="field"><label>utm_content</label><input id="u_cont" placeholder="variante (opcional)"></div>
+        </div>
+        <button class="btn btn-primary" onclick="buildUTM()">Gerar link</button>
+        <div class="result" id="u_res">
+          <div class="copy-row">
+            <input id="u_out" readonly>
+            <button class="btn btn-ghost" onclick="copyText('u_out')">Copiar</button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 9. Auditor CRO -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">9</span>
+          <div><h3>Auditor de Landing Page (CRO)</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+        <p class="tool-desc">Checklist interativo de conversão. Marque o que sua página já tem.</p>
+        <div id="cro_list"></div>
+        <button class="btn btn-primary" onclick="calcCRO()">Pontuar</button>
+        <div class="result" id="cro_res">
+          <div class="res-grid">
+            <div class="res" id="cro_box"><span class="v" id="cro_score">–</span><span class="l">Score CRO</span></div>
+            <div class="res"><span class="v" id="cro_chk">–</span><span class="l">Itens ok</span></div>
+          </div>
+          <div class="score-bar"><span id="cro_bar"></span></div>
+          <p class="tool-desc" id="cro_msg" style="margin-top:12px"></p>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 2: LANÇAMENTO ============ -->
+  <section class="tab-panel" id="lancamento">
+    <div class="panel-head">
+      <h2>Lançamento</h2>
+      <p>Planeje a timeline e simule a receita do seu lançamento.</p>
+      <span class="panel-cite">📚 Cita: Lançamento Milionário</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. Cronograma -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>Cronograma de Lançamento</h3><span class="tool-ebook">Lançamento Milionário</span></div></div>
+        <p class="tool-desc">Gera as datas de cada fase a partir da data de início.</p>
+        <div class="field row">
+          <div class="field"><label>Data de início</label><input id="cr_ini" type="date"></div>
+          <div class="field"><label>Pré-lançamento (dias)</label><input id="cr_pre" type="number" value="7"></div>
+          <div class="field"><label>Abertura (dias)</label><input id="cr_abre" type="number" value="3"></div>
+          <div class="field"><label>Pico (dias)</label><input id="cr_pico" type="number" value="5"></div>
+          <div class="field"><label>Fechamento (dias)</label><input id="cr_fecha" type="number" value="2"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcCronograma()">Montar cronograma</button>
+        <div class="result" id="cr_res">
+          <table class="tbl" id="cr_tbl"><thead><tr><th>Fase</th><th>Início</th><th>Término</th></tr></thead><tbody></tbody></table>
+        </div>
+      </article>
+
+      <!-- 2. Simulador de Receita -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Simulador de Receita de Lançamento</h3><span class="tool-ebook">Lançamento Milionário</span></div></div>
+        <p class="tool-desc">Receita estimada em cenários pessimista, realista e otimista.</p>
+        <div class="field row">
+          <div class="field"><label>Leads esperados</label><input id="sr_leads" type="number" value="2000"></div>
+          <div class="field"><label>Taxa de conversão (%)</label><input id="sr_conv" type="number" value="3"></div>
+          <div class="field"><label>Preço médio (R$)</label><input id="sr_preco" type="number" value="497"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcReceita()">Simular</button>
+        <div class="result" id="sr_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="sr_pess">–</span><span class="l">Pessimista</span></div>
+            <div class="res"><span class="v" id="sr_real">–</span><span class="l">Realista</span></div>
+            <div class="res good"><span class="v" id="sr_otim">–</span><span class="l">Otimista</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Calculadora de Oferta -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Calculadora de Oferta</h3><span class="tool-ebook">Lançamento Milionário</span></div></div>
+        <p class="tool-desc">Preço com desconto, parcelamento e impacto dos juros.</p>
+        <div class="field row">
+          <div class="field"><label>Preço original (R$)</label><input id="of_preco" type="number" value="497"></div>
+          <div class="field"><label>Desconto (%)</label><input id="of_desc" type="number" value="20"></div>
+          <div class="field"><label>Parcelas</label><input id="of_parc" type="number" value="12"></div>
+          <div class="field"><label>Juros da parcela (% a.m.)</label><input id="of_juros" type="number" value="1.5"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcOferta()">Calcular oferta</button>
+        <div class="result" id="of_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="of_promo">–</span><span class="l">Preço promo (R$)</span></div>
+            <div class="res"><span class="v" id="of_parc_v">–</span><span class="l">Valor parcela (R$)</span></div>
+            <div class="res"><span class="v" id="of_total">–</span><span class="l">Total c/ juros (R$)</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 3: FINANCEIRO ============ -->
+  <section class="tab-panel" id="financeiro">
+    <div class="panel-head">
+      <h2>Financeiro</h2>
+      <p>Precifique certo, projete o caixa e dimensione o capital de giro.</p>
+      <span class="panel-cite">📚 Cita: 10 Pilares do Controle Financeiro</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. Precificação -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>Calculadora de Precificação</h3><span class="tool-ebook">10 Pilares do Controle Financeiro</span></div></div>
+        <p class="tool-desc">Preço de venda a partir de custos + margem e impostos alvo.</p>
+        <div class="field row">
+          <div class="field"><label>Custo do produto/serviço (R$)</label><input id="pr_custo" type="number" value="80"></div>
+          <div class="field"><label>Custos fixos rateados (R$)</label><input id="pr_fixo" type="number" value="20"></div>
+          <div class="field"><label>Margem de lucro alvo (%)</label><input id="pr_marg" type="number" value="40"></div>
+          <div class="field"><label>Impostos (%)</label><input id="pr_imp" type="number" value="12"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcPrecificacao()">Calcular preço</button>
+        <div class="result" id="pr_res">
+          <div class="res-grid">
+            <div class="res good"><span class="v" id="pr_preco">–</span><span class="l">Preço sugerido (R$)</span></div>
+            <div class="res"><span class="v" id="pr_lucro">–</span><span class="l">Lucro/un. (R$)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Margem de Lucro -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Margem de Lucro</h3><span class="tool-ebook">10 Pilares do Controle Financeiro</span></div></div>
+        <p class="tool-desc">Margem e lucro absoluto a partir de preço e custo.</p>
+        <div class="field row">
+          <div class="field"><label>Preço de venda (R$)</label><input id="ml_preco" type="number" value="197"></div>
+          <div class="field"><label>Custo total (R$)</label><input id="ml_custo" type="number" value="110"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcMargem()">Calcular</button>
+        <div class="result" id="ml_res">
+          <div class="res-grid">
+            <div class="res" id="ml_box"><span class="v" id="ml_marg">–</span><span class="l">Margem (%)</span></div>
+            <div class="res"><span class="v" id="ml_lucro">–</span><span class="l">Lucro (R$)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Fluxo de Caixa -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Fluxo de Caixa Projetado</h3><span class="tool-ebook">10 Pilares do Controle Financeiro</span></div></div>
+        <p class="tool-desc">Saldo acumulado mês a mês com entradas e saídas fixas.</p>
+        <div class="field row">
+          <div class="field"><label>Capital inicial (R$)</label><input id="fc_ini" type="number" value="5000"></div>
+          <div class="field"><label>Entradas mensais (R$)</label><input id="fc_ent" type="number" value="8000"></div>
+          <div class="field"><label>Saídas mensais (R$)</label><input id="fc_sai" type="number" value="6500"></div>
+          <div class="field"><label>Meses</label><input id="fc_mes" type="number" value="6"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcFluxo()">Projetar</button>
+        <div class="result" id="fc_res">
+          <table class="tbl" id="fc_tbl"><thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Saldo</th></tr></thead><tbody></tbody></table>
+        </div>
+      </article>
+
+      <!-- 4. Capital de Giro -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">4</span>
+          <div><h3>Capital de Giro Necessário</h3><span class="tool-ebook">10 Pilares do Controle Financeiro</span></div></div>
+        <p class="tool-desc">Quanto de recursos você precisa girando para operar sem faltar caixa.</p>
+        <div class="field row">
+          <div class="field"><label>Custo operacional mensal (R$)</label><input id="cg_custo" type="number" value="20000"></div>
+          <div class="field"><label>Prazo de estoque (dias)</label><input id="cg_est" type="number" value="15"></div>
+          <div class="field"><label>Prazo de recebimento (dias)</label><input id="cg_rec" type="number" value="20"></div>
+          <div class="field"><label>Prazo de pagamento (dias)</label><input id="cg_pag" type="number" value="30"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcCapitalGiro()">Calcular</button>
+        <div class="result" id="cg_res">
+          <div class="res-grid">
+            <div class="res good"><span class="v" id="cg_val">–</span><span class="l">Capital de giro (R$)</span></div>
+            <div class="res"><span class="v" id="cg_ciclo">–</span><span class="l">Ciclo (dias)</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 4: VENDAS ============ -->
+  <section class="tab-panel" id="vendas">
+    <div class="panel-head">
+      <h2>Vendas</h2>
+      <p>Defina metas, simule descontos e descubra o ticket médio ideal.</p>
+      <span class="panel-cite">📚 Cita: Venda Mais Hoje</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. Metas -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>Metas de Vendas</h3><span class="tool-ebook">Venda Mais Hoje</span></div></div>
+        <p class="tool-desc">Meta diária e visitas necessárias a partir da meta mensal.</p>
+        <div class="field row">
+          <div class="field"><label>Meta mensal (R$)</label><input id="mt_meta" type="number" value="30000"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="mt_ticket" type="number" value="250"></div>
+          <div class="field"><label>Conversão (%)</label><input id="mt_conv" type="number" value="2"></div>
+          <div class="field"><label>Dias úteis no mês</label><input id="mt_dias" type="number" value="22"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcMetas()">Calcular metas</button>
+        <div class="result" id="mt_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="mt_unid">–</span><span class="l">Vendas/mês</span></div>
+            <div class="res"><span class="v" id="mt_dia">–</span><span class="l">Vendas/dia</span></div>
+            <div class="res"><span class="v" id="mt_vis">–</span><span class="l">Visitas/dia</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Simulador de Desconto -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Simulador de Desconto</h3><span class="tool-ebook">Venda Mais Hoje</span></div></div>
+        <p class="tool-desc">Impacto do desconto no lucro e no ponto de equilíbrio.</p>
+        <div class="field row">
+          <div class="field"><label>Preço original (R$)</label><input id="sd_preco" type="number" value="197"></div>
+          <div class="field"><label>Desconto (%)</label><input id="sd_desc" type="number" value="15"></div>
+          <div class="field"><label>Custo (R$)</label><input id="sd_custo" type="number" value="110"></div>
+          <div class="field"><label>Volume (unid.)</label><input id="sd_vol" type="number" value="100"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcDesconto()">Simular</button>
+        <div class="result" id="sd_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="sd_preco2">–</span><span class="l">Preço c/ desc.</span></div>
+            <div class="res" id="sd_box"><span class="v" id="sd_lucro">–</span><span class="l">Lucro total (R$)</span></div>
+            <div class="res"><span class="v" id="sd_max">–</span><span class="l">Desconto máx. (%)</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Ticket Médio -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Ticket Médio Necessário</h3><span class="tool-ebook">Venda Mais Hoje</span></div></div>
+        <p class="tool-desc">Qual ticket médio você precisa para bater a meta de faturamento.</p>
+        <div class="field row">
+          <div class="field"><label>Meta de faturamento (R$)</label><input id="tm_meta" type="number" value="50000"></div>
+          <div class="field"><label>Nº de clientes/transações</label><input id="tm_cli" type="number" value="200"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcTicket()">Calcular</button>
+        <div class="result" id="tm_res">
+          <div class="res-grid">
+            <div class="res good"><span class="v" id="tm_ticket">–</span><span class="l">Ticket médio (R$)</span></div>
+            <div class="res"><span class="v" id="tm_check">–</span><span class="l">Meta/mês</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 5: SUPORTE ============ -->
+  <section class="tab-panel" id="suporte">
+    <div class="panel-head">
+      <h2>Suporte &amp; Transformação</h2>
+      <p>Meça satisfação, responda reclamações e garanta o SLA.</p>
+      <span class="panel-cite">📚 Cita: Transforme Reclamações em Vendas</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. NPS / Índice de Reclamações -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>Índice de Reclamações / NPS</h3><span class="tool-ebook">Transforme Reclamações em Vendas</span></div></div>
+        <p class="tool-desc">NPS a partir de promotores/passivos/detratores e índice de reclamações.</p>
+        <div class="field row">
+          <div class="field"><label>Promotores (9-10)</label><input id="n_prom" type="number" value="60"></div>
+          <div class="field"><label>Passivos (7-8)</label><input id="n_pass" type="number" value="25"></div>
+          <div class="field"><label>Detratores (0-6)</label><input id="n_det" type="number" value="15"></div>
+          <div class="field"><label>Total de clientes no período</label><input id="n_total" type="number" value="500"></div>
+          <div class="field"><label>Reclamações recebidas</label><input id="n_rec" type="number" value="12"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcNPS()">Calcular</button>
+        <div class="result" id="n_res">
+          <div class="res-grid">
+            <div class="res" id="n_box"><span class="v" id="n_nps">–</span><span class="l">NPS</span></div>
+            <div class="res"><span class="v" id="n_idx">–</span><span class="l">Índice recl. (%)</span></div>
+            <div class="res"><span class="v" id="n_ppm">–</span><span class="l">Recl./1000 cli</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 2. Gerador de Resposta -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Gerador de Resposta a Reclamação</h3><span class="tool-ebook">Transforme Reclamações em Vendas</span></div></div>
+        <p class="tool-desc">Modelo de resposta em branco — sem IA, só preencher.</p>
+        <div class="field row">
+          <div class="field"><label>Nome do cliente</label><input id="gr_nome" value="Cliente"></div>
+          <div class="field"><label>Canal (ex.: Instagram)</label><input id="gr_canal" value="Instagram"></div>
+          <div class="field"><label>Problema relatado</label><input id="gr_prob" value="atraso na entrega"></div>
+          <div class="field"><label>Ação corretiva</label><input id="gr_acao" value="envio prioritário hoje"></div>
+          <div class="field"><label>Prazo (ex.: 24h)</label><input id="gr_prazo" value="24 horas"></div>
+          <div class="field"><label>Compensação (opcional)</label><input id="gr_comp" value="cupom de 15%"></div>
+        </div>
+        <button class="btn btn-primary" onclick="gerarResposta()">Gerar resposta</button>
+        <div class="result" id="gr_res">
+          <div class="answer-box" id="gr_out"></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('gr_out')">Copiar resposta</button></div>
+        </div>
+      </article>
+
+      <!-- 3. SLA / Tempo de Resposta -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Calculadora de Tempo de Resposta (SLA)</h3><span class="tool-ebook">Transforme Reclamações em Vendas</span></div></div>
+        <p class="tool-desc">Capacidade da equipe vs. volume de tickets.</p>
+        <div class="field row">
+          <div class="field"><label>Tickets/dia</label><input id="s_vol" type="number" value="120"></div>
+          <div class="field"><label>Atendentes</label><input id="s_at" type="number" value="3"></div>
+          <div class="field"><label>Tempo médio/resposta (min)</label><input id="s_tmp" type="number" value="8"></div>
+          <div class="field"><label>Horas de operação/dia</label><input id="s_horas" type="number" value="8"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcSLA()">Calcular SLA</button>
+        <div class="result" id="s_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="s_cap">–</span><span class="l">Capacidade/dia</span></div>
+            <div class="res" id="s_box"><span class="v" id="s_status">–</span><span class="l">Status</span></div>
+            <div class="res"><span class="v" id="s_fila">–</span><span class="l">Backlog/dia</span></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ TAB 6: OPERAÇÃO ============ -->
+  <section class="tab-panel" id="operacao">
+    <div class="panel-head">
+      <h2>Operação &amp; Gestão</h2>
+      <p>Audite a semana, planeje OKRs e priorize com Pareto/Eisenhower.</p>
+      <span class="panel-cite">📚 Cita: 10 Pilares da Gestão Empresarial</span>
+    </div>
+    <div class="tools-grid">
+
+      <!-- 1. Checklist Semanal -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">1</span>
+          <div><h3>Checklist de Auditagem Semanal (ritual M3)</h3><span class="tool-ebook">10 Pilares da Gestão Empresarial</span></div></div>
+        <p class="tool-desc">Marque o que foi executado na sua revisão semanal.</p>
+        <div id="chk_list"></div>
+        <button class="btn btn-primary" onclick="calcChecklist()">Pontuar</button>
+        <div class="result" id="chk_res">
+          <div class="res-grid">
+            <div class="res" id="chk_box"><span class="v" id="chk_score">–</span><span class="l">Score</span></div>
+            <div class="res"><span class="v" id="chk_ok">–</span><span class="l">Itens ok</span></div>
+          </div>
+          <div class="score-bar"><span id="chk_bar"></span></div>
+        </div>
+      </article>
+
+      <!-- 2. OKR -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">2</span>
+          <div><h3>Planejador de Metas (OKR)</h3><span class="tool-ebook">10 Pilares da Gestão Empresarial</span></div></div>
+        <p class="tool-desc">Progresso médio dos seus Key Results (atual vs. meta).</p>
+        <div class="field"><label>KR1 — atual / meta</label><div class="field row">
+          <input id="ok1_c" type="number" value="30"><input id="ok1_t" type="number" value="100"></div></div>
+        <div class="field"><label>KR2 — atual / meta</label><div class="field row">
+          <input id="ok2_c" type="number" value="45"><input id="ok2_t" type="number" value="100"></div></div>
+        <div class="field"><label>KR3 — atual / meta</label><div class="field row">
+          <input id="ok3_c" type="number" value="60"><input id="ok3_t" type="number" value="100"></div></div>
+        <button class="btn btn-primary" onclick="calcOKR()">Calcular progresso</button>
+        <div class="result" id="ok_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="ok_p1">–</span><span class="l">KR1</span></div>
+            <div class="res"><span class="v" id="ok_p2">–</span><span class="l">KR2</span></div>
+            <div class="res"><span class="v" id="ok_p3">–</span><span class="l">KR3</span></div>
+            <div class="res good"><span class="v" id="ok_media">–</span><span class="l">Média</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3. Matriz de Priorização -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">3</span>
+          <div><h3>Matriz de Priorização (Pareto + Eisenhower)</h3><span class="tool-ebook">10 Pilares da Gestão Empresarial</span></div></div>
+        <p class="tool-desc">Pareto: informe causas e impacto para achar os "poucos vitais" (80%).</p>
+        <div class="field"><label>Causa 1 — nome / impacto</label><div class="field row">
+          <input id="pa1_n" value="Falta de follow-up"><input id="pa1_v" type="number" value="40"></div></div>
+        <div class="field"><label>Causa 2 — nome / impacto</label><div class="field row">
+          <input id="pa2_n" value="Página lenta"><input id="pa2_v" type="number" value="25"></div></div>
+        <div class="field"><label>Causa 3 — nome / impacto</label><div class="field row">
+          <input id="pa3_n" value="Preço alto"><input id="pa3_v" type="number" value="20"></div></div>
+        <div class="field"><label>Causa 4 — nome / impacto</label><div class="field row">
+          <input id="pa4_n" value="Concorrência"><input id="pa4_v" type="number" value="15"></div></div>
+        <button class="btn btn-primary" onclick="calcPareto()">Analisar Pareto</button>
+        <div class="result" id="pa_res">
+          <table class="tbl" id="pa_tbl"><thead><tr><th>Causa</th><th>Impacto</th><th>% acum.</th><th>Vital?</th></tr></thead><tbody></tbody></table>
+          <p class="tool-desc" id="pa_msg" style="margin-top:12px"></p>
+        </div>
+        <div class="quadrant-grid" style="margin-top:16px">
+          <div class="quadrant q1"><h4>🔴 Fazer (urgente + importante)</h4><textarea placeholder="Tarefas..."></textarea></div>
+          <div class="quadrant q2"><h4>🔵 Agendar (importante, não urgente)</h4><textarea placeholder="Tarefas..."></textarea></div>
+          <div class="quadrant q3"><h4>🟡 Delegar (urgente, não importante)</h4><textarea placeholder="Tarefas..."></textarea></div>
+          <div class="quadrant q4"><h4>⚪ Eliminar (nem urgente nem importante)</h4><textarea placeholder="Tarefas..."></textarea></div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="brand-row">
+      <img src="kodaros_logo.png" alt="KODAROS">
+      <span class="word">FERRAMENTAS</span>
+    </div>
+    <p>KODAROS · Ferramentas gratuitas e citáveis nos e-books · 100% client-side, sem IA.<br>
+    Conheça os e-books em <a href="https://kelvinoliveiracode.github.io/Kodaros/" target="_blank" rel="noopener">kodaros.com</a></p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
