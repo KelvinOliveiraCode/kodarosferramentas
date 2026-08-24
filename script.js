@@ -16,15 +16,280 @@ function show(el){ document.getElementById(el).classList.add('show'); }
 function val(id){ return document.getElementById(id).value; }
 function numv(id){ return parseFloat(document.getElementById(id).value) || 0; }
 
-/* ---------- Tabs ---------- */
+/* ---------- Tabs + Deep linking ---------- */
+function activateTab(id, pushHash){
+  const btn = document.querySelector('.tab-btn[data-tab="'+id+'"]');
+  const panel = document.getElementById(id);
+  if(!btn || !panel) return;
+  document.querySelectorAll('.tab-btn').forEach(function(b){
+    const isActive = b === btn;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    b.setAttribute('tabindex', isActive ? '0' : '-1');
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    const isActive = p === panel;
+    p.classList.toggle('active', isActive);
+    if(isActive) p.removeAttribute('hidden');
+    else p.setAttribute('hidden','');
+  });
+  if(pushHash){
+    const toolHash = location.hash.includes('/') ? location.hash.split('/')[1] : '';
+    const newHash = toolHash ? id + '/' + toolHash : id;
+    if(location.hash.slice(1) !== newHash) history.pushState(null,'','#'+newHash);
+  }
+}
 document.querySelectorAll('.tab-btn').forEach(function(btn){
   btn.addEventListener('click', function(){
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById(btn.dataset.tab).classList.add('active');
+    activateTab(btn.dataset.tab, true);
+  });
+  btn.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight' || e.key==='ArrowLeft'){
+      e.preventDefault();
+      const all=[...document.querySelectorAll('.tab-btn')];
+      const idx=all.indexOf(btn);
+      const next = e.key==='ArrowRight' ? (idx+1)%all.length : (idx-1+all.length)%all.length;
+      all[next].focus(); activateTab(all[next].dataset.tab, true);
+    }
   });
 });
+// init from hash
+(function initHash(){
+  const raw = location.hash.slice(1).split('/')[0];
+  const valid = ['aquisicao','lancamento','financeiro','vendas','suporte','operacao','conteudo'];
+  const target = valid.includes(raw) ? raw : 'aquisicao';
+  activateTab(target, false);
+  // ensure correct initial aria
+  document.querySelectorAll('.tab-panel').forEach(function(p){
+    if(!p.classList.contains('active')) p.setAttribute('hidden','');
+  });
+})();
+window.addEventListener('hashchange', function(){
+  const raw = location.hash.slice(1).split('/')[0];
+  if(raw) activateTab(raw, false);
+  // scroll to tool if second part
+  const parts = location.hash.slice(1).split('/');
+  if(parts[1]){
+    const el = document.getElementById(parts[1]);
+    if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 250);
+  }
+});
+
+/* ---------- Busca + Deep link por ferramenta ---------- */
+(function initToolAnchorsAndSearch(){
+  function slugify(s){
+    return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+  }
+  const tools = document.querySelectorAll('.tool');
+  const seen = {};
+  tools.forEach(function(tool){
+    const h3 = tool.querySelector('h3');
+    if(!h3) return;
+    let base = 'tool-' + slugify(h3.textContent);
+    let id = base;
+    let n=1;
+    while(document.getElementById(id) || seen[id]){ id = base + '-' + (++n); }
+    seen[id]=true;
+    tool.id = id;
+    tool.style.position='relative';
+    // anchor for offset
+    const anc = document.createElement('span');
+    anc.id = id + '-anc';
+    anc.className='tool-anchor';
+    anc.setAttribute('aria-hidden','true');
+    tool.prepend(anc);
+    // actions row if not exists at bottom
+    if(!tool.querySelector('.tool-actions')){
+      const actions = document.createElement('div');
+      actions.className='tool-actions';
+      const linkBtn = document.createElement('button');
+      linkBtn.className='btn btn-ghost btn-sm';
+      linkBtn.type='button';
+      linkBtn.textContent='Copiar link';
+      linkBtn.setAttribute('aria-label','Copiar link desta ferramenta');
+      linkBtn.addEventListener('click', function(){ copyToolLink(id, linkBtn); });
+      const waBtn = document.createElement('a');
+      waBtn.className='btn btn-ghost btn-sm';
+      waBtn.textContent='WhatsApp';
+      waBtn.target='_blank';
+      waBtn.rel='noopener';
+      waBtn.setAttribute('aria-label','Compartilhar no WhatsApp');
+      waBtn.href='#';
+      waBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        const tab = tool.closest('.tab-panel')?.id || 'aquisicao';
+        const url = location.origin + location.pathname + '#' + tab + '/' + id;
+        const text = encodeURIComponent(h3.textContent + ' — Ferramentas KODAROS ' + url);
+        window.open('https://wa.me/?text=' + text, '_blank');
+        trackEvent('share_whatsapp', {tool: id});
+      });
+      linkBtn.addEventListener('click', function(){ trackEvent('copy_link', {tool: id}); });
+      actions.appendChild(linkBtn);
+      actions.appendChild(waBtn);
+      // export button (only if tool has result)
+      if(tool.querySelector('.result')){
+        const expBtn=document.createElement('button');
+        expBtn.className='btn btn-ghost btn-sm';
+        expBtn.type='button';
+        expBtn.textContent='Exportar';
+        expBtn.setAttribute('aria-label','Exportar resultado');
+        expBtn.addEventListener('click', function(){ exportToolResult(id, expBtn); });
+        actions.appendChild(expBtn);
+      }
+      tool.appendChild(actions);
+    }
+  });
+  // handle initial tool hash
+  const partsInit = location.hash.slice(1).split('/');
+  if(partsInit[1]){
+    const el = document.getElementById(partsInit[1]);
+    if(el) setTimeout(function(){ el.scrollIntoView({behavior:'smooth', block:'start'}); }, 300);
+  }
+  // search
+  const input = document.getElementById('toolsSearch');
+  const meta = document.getElementById('searchMeta');
+  if(!input) return;
+  input.addEventListener('input', function(){
+    const q = input.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    let total=0, shown=0;
+    tools.forEach(function(tool){
+      total++;
+      const txt = (tool.querySelector('h3')?.textContent + ' ' + (tool.querySelector('.tool-desc')?.textContent||'') + ' ' + (tool.querySelector('.tool-ebook')?.textContent||'')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      const match = !q || txt.includes(q);
+      tool.classList.toggle('hidden-by-search', !match);
+      if(match) shown++;
+      // if searching, ensure parent tab is visible if any match inside
+      if(match && q){
+        const panel = tool.closest('.tab-panel');
+        if(panel && !panel.classList.contains('active')){
+          // don't auto-switch tab, just count; but highlight tab with badge
+        }
+      }
+    });
+    if(meta){
+      if(!q) meta.textContent='';
+      else meta.textContent = shown + ' de ' + total + ' ferramentas';
+    }
+    // if searching, show all panels to reveal matches; otherwise restore active tab only
+    if(q){
+      document.querySelectorAll('.tab-panel').forEach(function(p){
+        p.classList.add('active');
+        p.removeAttribute('hidden');
+      });
+    } else {
+      // restore hash tab
+      const raw = location.hash.slice(1).split('/')[0] || 'aquisicao';
+      activateTab(raw, false);
+    }
+  });
+})();
+function copyToolLink(toolId, btn){
+  const panel = document.getElementById(toolId)?.closest('.tab-panel');
+  const tab = panel ? panel.id : 'aquisicao';
+  const url = location.origin + location.pathname + '#' + tab + '/' + toolId;
+  const trigger = btn;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){
+      const orig = trigger.textContent;
+      trigger.textContent='Link copiado!';
+      setTimeout(function(){ trigger.textContent=orig; }, 1500);
+    });
+  } else {
+    fallbackCopy(url, function(){
+      const orig = trigger.textContent;
+      trigger.textContent='Link copiado!';
+      setTimeout(function(){ trigger.textContent=orig; }, 1500);
+    });
+  }
+  history.pushState(null,'','#'+tab+'/'+toolId);
+}
+function trackEvent(name, props){
+  try{
+    const key='kodaros_events';
+    const arr=JSON.parse(localStorage.getItem(key)||'[]');
+    arr.push({name, props, ts: Date.now(), url: location.href});
+    if(arr.length>200) arr.splice(0, arr.length-200);
+    localStorage.setItem(key, JSON.stringify(arr));
+    // Plausible / Umami hook if present
+    if(window.plausible) window.plausible(name, {props});
+  } catch(e){}
+}
+function exportToolResult(toolId, btn){
+  const tool=document.getElementById(toolId);
+  if(!tool) return;
+  const h3=tool.querySelector('h3')?.textContent?.trim() || toolId;
+  const resultEl=tool.querySelector('.result');
+  if(!resultEl || !resultEl.classList.contains('show')){
+    alert('Calcule primeiro para exportar.');
+    return;
+  }
+  // collect visible result texts
+  let lines=[h3,'', '— Ferramentas KODAROS —', ''];
+  tool.querySelectorAll('.result .res').forEach(function(r){
+    const v=r.querySelector('.v')?.textContent?.trim();
+    const l=r.querySelector('.l')?.textContent?.trim();
+    if(v && l) lines.push(l + ': ' + v);
+  });
+  tool.querySelectorAll('.result .answer-box').forEach(function(a){
+    if(a.textContent.trim()) lines.push('', a.textContent.trim());
+  });
+  tool.querySelectorAll('.result table.tbl').forEach(function(tbl){
+    lines.push('');
+    const heads=[...tbl.querySelectorAll('thead th')].map(th=>th.textContent.trim()).join(' | ');
+    if(heads) lines.push(heads);
+    [...tbl.querySelectorAll('tbody tr')].forEach(tr=>{
+      const row=[...tr.querySelectorAll('td')].map(td=>td.textContent.trim()).join(' | ');
+      lines.push(row);
+    });
+  });
+  lines.push('', location.origin + location.pathname + '#' + (tool.closest('.tab-panel')?.id||'') + '/' + toolId);
+  // try PNG via canvas, fallback to TXT
+  try{
+    const c=document.createElement('canvas');
+    const W=900, H= 220 + lines.length*26;
+    c.width=W; c.height=Math.min(H, 1800);
+    const x=c.getContext('2d');
+    x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,c.height);
+    x.strokeStyle='rgba(255,255,255,0.18)'; x.strokeRect(16,16,W-32,c.height-32);
+    x.fillStyle='#FFFFFF'; x.font='700 22px Figtree, Arial, sans-serif';
+    x.fillText(h3, 32, 48);
+    x.fillStyle='#A3A3A3'; x.font='500 13px Figtree, Arial, sans-serif';
+    x.fillText('KODAROS • kodarosferramentas', 32, 70);
+    x.fillStyle='#F5F5F5'; x.font='400 15px Figtree, Arial, sans-serif';
+    let y=110;
+    x.textBaseline='top';
+    // wrap long lines
+    lines.slice(3).forEach(function(line){
+      if(!line){ y+=10; return; }
+      // simple wrap at 85 chars
+      const maxChars=78;
+      if(line.length>maxChars){
+        const words=line.split(' ');
+        let cur='';
+        words.forEach(function(w){
+          const test=cur?cur+' '+w:w;
+          if(test.length>maxChars){ x.fillText(cur,32,y); y+=20; cur=w; } else cur=test;
+        });
+        if(cur){ x.fillText(cur,32,y); y+=20; }
+      } else { x.fillText(line,32,y); y+=20; }
+      if(y>c.height-30) return;
+    });
+    const url=c.toDataURL('image/png');
+    const a=document.createElement('a');
+    a.download='kodaros-'+toolId+'.png';
+    a.href=url; a.click();
+    const orig=btn.textContent; btn.textContent='PNG baixado!'; setTimeout(function(){ btn.textContent=orig; }, 1500);
+    trackEvent('export_png', {tool: toolId});
+  } catch(e){
+    // fallback TXT
+    const blob=new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob); a.download='kodaros-'+toolId+'.txt'; a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+    trackEvent('export_txt', {tool: toolId});
+  }
+}
 
 /* ---------- Recolher abas ---------- */
 (function(){
@@ -49,14 +314,179 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
   updateToggle();
 })();
 
-/* ---------- Copiar ---------- */
-function copyText(id){
-  const t = document.getElementById(id).innerText || document.getElementById(id).value || '';
-  const text = document.getElementById(id).tagName === 'INPUT' ? document.getElementById(id).value : t;
-  navigator.clipboard.writeText(text).then(function(){
-    event.target.textContent = 'Copiado!';
-    setTimeout(function(){ event.target.textContent = 'Copiar'; }, 1500);
+/* ---------- Auto-cálculo + Validação + Persistência ---------- */
+(function initAutoCalcAndPersist(){
+  // harden number inputs
+  document.querySelectorAll('.tool input[type="number"]').forEach(function(el){
+    if(!el.hasAttribute('min')) el.setAttribute('min','0');
+    if(!el.hasAttribute('step')) el.setAttribute('step','any');
+    if(!el.hasAttribute('inputmode')) el.setAttribute('inputmode','decimal');
   });
+  const STORAGE_KEY='kodaros_tools_v1';
+  let store={};
+  try{ store = JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}'); } catch(e){ store={}; }
+  function saveStore(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); } catch(e){} }
+
+  // restaura valores
+  document.querySelectorAll('.tool input, .tool textarea, .tool select').forEach(function(el){
+    if(!el.id) return;
+    if(store[el.id] !== undefined){
+      el.value = store[el.id];
+    }
+    el.addEventListener('input', function(){
+      store[el.id]=el.value;
+      saveStore();
+      validateField(el);
+    });
+    el.addEventListener('change', function(){
+      store[el.id]=el.value;
+      saveStore();
+    });
+  });
+  // checkboxes
+  document.querySelectorAll('.tool input[type=checkbox]').forEach(function(el){
+    if(!el.id) return;
+    if(store[el.id] !== undefined) el.checked = store[el.id]==='true' || store[el.id]===true;
+    el.addEventListener('change', function(){ store[el.id]=el.checked; saveStore(); });
+  });
+
+  function validateField(el){
+    const v = el.value.trim();
+    const field = el.closest('.field');
+    if(!field) return true;
+    // skip file inputs and empty optional text
+    if(el.type==='file' || el.type==='checkbox') return true;
+    if(el.type==='number'){
+      const n = parseFloat(v);
+      if(v!=='' && (!isFinite(n) || n < 0)){
+        field.classList.add('has-error');
+        let err = field.querySelector('.field-error');
+        if(!err){ err=document.createElement('div'); err.className='field-error'; field.appendChild(err); }
+        err.textContent = n < 0 ? 'Valor não pode ser negativo.' : 'Valor inválido.';
+        return false;
+      } else {
+        field.classList.remove('has-error');
+        const err = field.querySelector('.field-error');
+        if(err) err.remove();
+        return true;
+      }
+    }
+    return true;
+  }
+
+  // debounce auto-calc
+  const toolMap = [
+    {ids:['c1_gasto','c1_cli','c1_ticket','c1_freq','c1_ret','c1_marg'], fn:'calcCAC'},
+    {ids:['c2_cac','c2_ticket','c2_marg','c2_orc','c2_cresc','c2_sem'], fn:'calcEscala'},
+    {ids:['c3_vis','c3_t1','c3_t2','c3_t3','c3_t4','c3_nomes'], fn:'calcFunil'},
+    {ids:['r_inv','r_rec'], fn:'calcROAS'},
+    {ids:['be_custo','be_ticket','be_cv'], fn:'calcBreakEven'},
+    {ids:['m_imp','m_custo','m_cli','m_conv','m_lead'], fn:'calcMetrica'},
+    {ids:['o_total','o_fb','o_gg','o_tk'], fn:'calcOrcamento'},
+    {ids:['cpl_ticket','cpl_marg','cpl_conv'], fn:'calcCPL'},
+    {ids:['ab_ctra','ab_ctrb','ab_imp'], fn:'simAB'},
+    {ids:['cr_ini','cr_pre','cr_abre','cr_pico','cr_fecha'], fn:'calcCronograma'},
+    {ids:['sr_leads','sr_conv','sr_preco'], fn:'calcReceita'},
+    {ids:['of_preco','of_desc','of_parc','of_juros'], fn:'calcOferta'},
+    {ids:['pr_custo','pr_fixo','pr_marg','pr_imp'], fn:'calcPrecificacao'},
+    {ids:['ml_preco','ml_custo'], fn:'calcMargem'},
+    {ids:['fc_ini','fc_ent','fc_sai','fc_mes'], fn:'calcFluxo'},
+    {ids:['cg_custo','cg_est','cg_rec','cg_pag'], fn:'calcCapitalGiro'},
+    {ids:['mt_meta','mt_ticket','mt_conv','mt_dias'], fn:'calcMetas'},
+    {ids:['sd_preco','sd_desc','sd_custo','sd_vol'], fn:'calcDesconto'},
+    {ids:['tm_meta','tm_cli'], fn:'calcTicket'},
+    {ids:['n_prom','n_pass','n_det','n_total','n_rec'], fn:'calcNPS'},
+    {ids:['s_vol','s_at','s_tmp','s_horas'], fn:'calcSLA'},
+    {ids:['vr_cli','vr_ticket','vr_tx'], fn:'calcValorRec'},
+    {ids:['pe_fixo','pe_preco','pe_cv'], fn:'calcEquilibrio'},
+    {ids:['jc_aporte','jc_taxa','jc_mes'], fn:'calcJuros'},
+    {ids:['pl_lucro','pl_pl'], fn:'calcProLabore'},
+    {ids:['fv_lead','fv_prop','fv_fecha'], fn:'calcFunilVendas'},
+    {ids:['fu_lead','fu_tx','fu_tent'], fn:'calcFollow'},
+    {ids:['ce_sem','ce_semanas'], fn:'calcCalendario'},
+    {ids:['rc_inv','rc_leads','rc_conv','rc_ticket'], fn:'calcROIConteudo'},
+    {ids:['hf_meta','hf_horas','hf_marg'], fn:'calcHoraFat'},
+    {ids:['ma_meta','ma_mes'], fn:'calcMetasAn'},
+    {ids:['cpe_inv','cpe_ins'], fn:'calcCPE'}
+  ];
+  const debounceMap={};
+  function debounce(fn, wait){ let t; return function(){ clearTimeout(t); t=setTimeout(fn, wait); }; }
+  toolMap.forEach(function(entry){
+    const handler = debounce(function(){
+      // validate all fields first
+      let ok=true;
+      entry.ids.forEach(function(id){
+        const el=document.getElementById(id);
+        if(el && !validateField(el)) ok=false;
+      });
+      if(!ok) return;
+      try{ window[entry.fn](); } catch(e){}
+    }, 700);
+    entry.ids.forEach(function(id){
+      const el=document.getElementById(id);
+      if(el) el.addEventListener('input', handler);
+    });
+  });
+  // add reset per tool
+  document.querySelectorAll('.tool').forEach(function(tool){
+    const btnRow = tool.querySelector('.tool-actions');
+    if(!btnRow) return;
+    const resetBtn=document.createElement('button');
+    resetBtn.className='btn btn-ghost btn-sm';
+    resetBtn.type='button';
+    resetBtn.textContent='Limpar';
+    resetBtn.addEventListener('click', function(){
+      tool.querySelectorAll('input, textarea, select').forEach(function(el){
+        if(el.type==='checkbox') el.checked=false;
+        else if(el.type!=='file') el.value='';
+        if(el.id) delete store[el.id];
+      });
+      saveStore();
+      const res=tool.querySelector('.result');
+      if(res) res.classList.remove('show');
+      tool.querySelectorAll('.field.has-error').forEach(function(f){ f.classList.remove('has-error'); });
+    });
+    btnRow.appendChild(resetBtn);
+  });
+})();
+
+/* ---------- Helpers de segurança ---------- */
+function escapeHTML(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ---------- Copiar ---------- */
+function copyText(id, trigger){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const isInput = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
+  const text = isInput ? el.value : (el.innerText || el.textContent || '');
+  const btn = trigger || (typeof event !== 'undefined' ? event.target : null);
+  const orig = btn ? btn.textContent : '';
+  function done(){
+    if(btn){
+      btn.textContent = 'Copiado!';
+      setTimeout(function(){ btn.textContent = orig.includes('Copiar') ? orig : 'Copiar'; }, 1500);
+    }
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){
+      fallbackCopy(text, done);
+    });
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, cb){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly','');
+  ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta);
+  ta.select();
+  try{ document.execCommand('copy'); } catch(e){}
+  document.body.removeChild(ta);
+  if(cb) cb();
 }
 
 /* =========================================================
@@ -86,21 +516,27 @@ function calcCAC(){
 function calcEscala(){
   const cac=numv('c2_cac'), ticket=numv('c2_ticket'), marg=numv('c2_marg')/100,
         orc0=numv('c2_orc'), cresc=numv('c2_cresc')/100, sem=Math.max(1,Math.round(numv('c2_sem')));
-  let orc=orc0, tCli=0, tRec=0, tGasto=0;
+  let orc=orc0, tCli=0, tRec=0, tGasto=0, tLuc=0;
   const tb=document.querySelector('#c2_tbl tbody'); tb.innerHTML='';
   for(let i=1;i<=sem;i++){
     const clientes=orc/cac;
     const receita=clientes*ticket;
     const lucro=receita*marg;
-    tCli+=clientes; tRec+=receita; tGasto+=orc;
+    tCli+=clientes; tRec+=receita; tGasto+=orc; tLuc+=lucro;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${i}</td><td>${brl(orc)}</td><td>${num(clientes)}</td><td>${brl(receita)}</td><td>${brl(lucro)}</td>`;
+    const tds=[''+i, brl(orc), num(clientes), brl(receita), brl(lucro)];
+    tds.forEach((v,idx)=>{
+      const td=document.createElement('td');
+      td.textContent=v;
+      if(idx===0) td.style.textAlign='left';
+      tr.appendChild(td);
+    });
     tb.appendChild(tr);
     orc*=(1+cresc);
   }
   document.getElementById('c2_tcli').textContent=num(tCli);
   document.getElementById('c2_trec').textContent=brl(tRec);
-  document.getElementById('c2_tluc').textContent=brl(tRec-tGasto);
+  document.getElementById('c2_tluc').textContent=brl(tLuc);
   document.getElementById('c2_tgasto').textContent=brl(tGasto);
   show('c2_res');
 }
@@ -116,15 +552,26 @@ function calcFunil(){
     const conv=taxas[i];
     const sairam=entraram*(1-conv);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${nomes[i]||('Etapa '+(i+1))} → ${nomes[i+1]||'Venda'}</td><td>${num(entraram)}</td><td>${pct(conv*100)}</td><td>${num(sairam)}</td>`;
+    const label = (nomes[i]||('Etapa '+(i+1))) + ' → ' + (nomes[i+1]||'Venda');
+    [label, num(entraram), pct(conv*100), num(sairam)].forEach((v,idx)=>{
+      const td=document.createElement('td');
+      td.textContent=v;
+      if(idx===0) td.style.textAlign='left';
+      else td.style.textAlign='right';
+      tr.appendChild(td);
+    });
     tb.appendChild(tr);
     if(conv<menor){ menor=conv; gargaloIdx=i; }
     entraram=entraram*conv;
   }
-  tb.children[gargaloIdx].classList.add('gargalo');
+  if(tb.children[gargaloIdx]) tb.children[gargaloIdx].classList.add('gargalo');
   const trf=document.createElement('tr');
   trf.className='total';
-  trf.innerHTML=`<td>Vendas totais</td><td>${num(entraram)}</td><td>–</td><td>–</td>`;
+  ['Vendas totais', num(entraram), '–', '–'].forEach((v,idx)=>{
+    const td=document.createElement('td'); td.textContent=v;
+    td.style.textAlign = idx===0 ? 'left' : 'right';
+    trf.appendChild(td);
+  });
   tb.appendChild(trf);
   show('c3_res');
 }
@@ -187,12 +634,18 @@ function calcOrcamento(){
 
 /* 8. UTM Builder */
 function buildUTM(){
-  const url=val('u_url')||'';
+  let url=(val('u_url')||'').trim();
+  if(!url){ alert('Informe a URL base.'); return; }
+  try{ new URL(url); } catch(e){ alert('URL base inválida. Use https://...'); return; }
   const params={};
   const map={'u_source':'utm_source','u_medium':'utm_medium','u_camp':'utm_campaign','u_term':'utm_term','u_cont':'utm_content'};
   for(const k in map){ const v=(document.getElementById(k).value||'').trim(); if(v) params[map[k]]=v; }
-  let out=url.indexOf('?')>=0?url+'&':url+'?';
-  out+=Object.keys(params).map(k=>k+'='+encodeURIComponent(params[k])).join('&');
+  const keys=Object.keys(params);
+  if(keys.length===0){ alert('Preencha ao menos um parâmetro UTM.'); return; }
+  const qs=keys.map(k=>k+'='+encodeURIComponent(params[k])).join('&');
+  let out=url;
+  out += url.indexOf('?')>=0 ? (url.endsWith('?')||url.endsWith('&') ? '' : '&') : '?';
+  out += qs;
   document.getElementById('u_out').value=out;
   show('u_res');
 }
@@ -250,7 +703,11 @@ function calcCronograma(){
     const inicio=d;
     const fim=addDays(d, f[1]);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${f[0]}</td><td>${fmtDate(inicio)}</td><td>${fmtDate(fim)}</td>`;
+    [f[0], fmtDate(inicio), fmtDate(fim)].forEach((v,idx)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      td.style.textAlign = idx===0 ? 'left' : 'right';
+      tr.appendChild(td);
+    });
     tb.appendChild(tr);
     d=fim;
   });
@@ -313,7 +770,11 @@ function calcFluxo(){
   for(let i=1;i<=meses;i++){
     saldo=saldo+ent-sai;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${i}</td><td>${brl(ent)}</td><td>${brl(sai)}</td><td>${brl(saldo)}</td>`;
+    [String(i), brl(ent), brl(sai), brl(saldo)].forEach((v,idx)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      td.style.textAlign = idx===0 ? 'left' : 'right';
+      tr.appendChild(td);
+    });
     if(saldo<0) tr.classList.add('gargalo');
     tb.appendChild(tr);
   }
@@ -466,17 +927,24 @@ function calcPareto(){
   itens.sort((a,b)=>b.v-a.v);
   let acum=0;
   const tb=document.querySelector('#pa_tbl tbody'); tb.innerHTML='';
+  let vitalCount=0;
+  let reached80=false;
   itens.forEach(function(x){
     acum+=x.v;
-    const vital=acum/total<=0.8 && total>0;
+    const pctAcum = total? acum/total*100 : 0;
+    // vital = itens que compõem até cruzar 80%
+    const vital = !reached80 && total>0;
+    if(vital) vitalCount++;
+    if(pctAcum >= 80) reached80 = true;
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${x.n}</td><td>${num(x.v)}</td><td>${pct(total?acum/total*100:0)}</td><td>${vital?'⭐ Sim':'–'}</td>`;
+    [x.n, num(x.v), pct(pctAcum), vital?'⭐ Sim':'–'].forEach((v,idx)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      td.style.textAlign = idx===0 ? 'left' : 'right';
+      tr.appendChild(td);
+    });
     if(vital) tr.classList.add('gargalo');
     tb.appendChild(tr);
   });
-  const vitalCount=itens.filter((x,i)=>{
-    let a=0; for(let j=0;j<=i;j++) a+=itens[j].v; return total? a/total<=0.8:false;
-  }).length;
   document.getElementById('pa_msg').textContent='Princípio de Pareto: '+vitalCount+' de '+itens.length+' causa(s) respondem por até 80% do impacto. Foque nelas primeiro.';
   show('pa_res');
 }
@@ -521,7 +989,11 @@ function calcCronInvertido(){
   for(let i=fases.length-1;i>=0;i--){
     const dur=fases[i][1], termino=d, inicio=addDays(d, -dur);
     const tr=document.createElement('tr');
-    tr.innerHTML=`<td>${fases[i][0]}</td><td>${fmtDate(inicio)}</td><td>${fmtDate(termino)}</td>`;
+    [fases[i][0], fmtDate(inicio), fmtDate(termino)].forEach((v,idx)=>{
+      const td=document.createElement('td'); td.textContent=v;
+      td.style.textAlign = idx===0 ? 'left' : 'right';
+      tr.appendChild(td);
+    });
     tb.appendChild(tr); d=inicio;
   }
   show('ci_res');
@@ -557,7 +1029,8 @@ function calcEquilibrio(){
 function calcJuros(){
   const aporte=numv('jc_aporte'), taxa=numv('jc_taxa')/100, meses=Math.max(1,Math.round(numv('jc_mes')));
   let total=0;
-  for(let i=1;i<=meses;i++){ total=(total+aporte)*(1+taxa); }
+  // aporte no fim do período: rende a partir do próximo mês
+  for(let i=1;i<=meses;i++){ total = total*(1+taxa) + aporte; }
   document.getElementById('jc_total').textContent=brl(total);
   document.getElementById('jc_rend').textContent=brl(total-aporte*meses);
   show('jc_res');
@@ -686,8 +1159,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let isTabActive = true;
   document.addEventListener('visibilitychange', () => { isTabActive = !document.hidden; });
 
-  /* ---- GALÁXIA ANIMADA ---- */
+   /* ---- GALÁXIA ANIMADA ---- */
   (function initGalaxy() {
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const canvas = document.getElementById('particle-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');

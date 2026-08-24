@@ -11,11 +11,32 @@
 <meta property="og:title" content="Ferramentas KODAROS">
 <meta property="og:description" content="Calculadoras e geradores gratuitos, citáveis nos e-books KODAROS.">
 <meta property="og:image" content="https://kelvinoliveiracode.github.io/kodarosferramentas/kodaros_logo.png">
+<meta property="og:url" content="https://kelvinoliveiracode.github.io/kodarosferramentas/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ferramentas KODAROS">
+<meta name="twitter:description" content="Calculadoras e geradores gratuitos, citáveis nos e-books KODAROS.">
+<meta name="twitter:image" content="https://kelvinoliveiracode.github.io/kodarosferramentas/kodaros_logo.png">
+<link rel="canonical" href="https://kelvinoliveiracode.github.io/kodarosferramentas/">
+<meta name="theme-color" content="#0A0A0A">
 <link rel="icon" href="kodaros_icon.png">
 <link rel="stylesheet" href="style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Ferramentas KODAROS",
+  "url": "https://kelvinoliveiracode.github.io/kodarosferramentas/",
+  "description": "Calculadoras e geradores gratuitos da KODAROS: aquisição, lançamento, financeiro, vendas, suporte, gestão, conteúdo. 100% client-side, sem IA.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "All",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
+  "publisher": { "@type": "Organization", "name": "KODAROS", "url": "https://kelvinoliveiracode.github.io/Kodaros/" }
+}
+</script>
 </head>
 <body>
-
+<a href="#aquisicao" class="skip-link">Pular para o conteúdo</a>
 <canvas id="particle-canvas" aria-hidden="true" role="presentation"></canvas>
 
 <!-- NAVBAR -->
@@ -56,34 +77,39 @@
         </a>
       </div>
     </div>
-    <div class="hero-visual">
-      <div class="hero-icon-svg">
-        <img src="kodaros_icon.png" alt="Ícone KODAROS" class="hero-icon-img">
-      </div>
-    </div>
+      <div class="hero-visual">
+       <div class="hero-icon-svg">
+         <img src="kodaros_icon.png" alt="Ícone KODAROS — ferramentas gratuitas de aquisição, financeiro, vendas e gestão" class="hero-icon-img" width="400" height="400" loading="eager">
+       </div>
+     </div>
   </div>
   <div class="scroll-indicator">
     <div class="scroll-line"></div>
   </div>
 </section>
 
-<nav class="tabs" id="tabs">
-  <div class="tabs-inner">
-    <button class="tab-btn active" data-tab="aquisicao">Aquisição &amp; Tráfego</button>
-    <button class="tab-btn" data-tab="lancamento">Lançamento</button>
-    <button class="tab-btn" data-tab="financeiro">Financeiro</button>
-    <button class="tab-btn" data-tab="vendas">Vendas</button>
-    <button class="tab-btn" data-tab="suporte">Suporte &amp; Transformação</button>
-    <button class="tab-btn" data-tab="operacao">Operação &amp; Gestão</button>
-    <button class="tab-btn" data-tab="conteudo">Conteúdo &amp; Marketing</button>
+<nav class="tabs" id="tabs" aria-label="Categorias de ferramentas">
+  <div class="tabs-inner" role="tablist" aria-label="Abas de ferramentas">
+    <button class="tab-btn active" data-tab="aquisicao" role="tab" aria-selected="true" aria-controls="aquisicao" id="tab-aquisicao">Aquisição &amp; Tráfego</button>
+    <button class="tab-btn" data-tab="lancamento" role="tab" aria-selected="false" aria-controls="lancamento" id="tab-lancamento">Lançamento</button>
+    <button class="tab-btn" data-tab="financeiro" role="tab" aria-selected="false" aria-controls="financeiro" id="tab-financeiro">Financeiro</button>
+    <button class="tab-btn" data-tab="vendas" role="tab" aria-selected="false" aria-controls="vendas" id="tab-vendas">Vendas</button>
+    <button class="tab-btn" data-tab="suporte" role="tab" aria-selected="false" aria-controls="suporte" id="tab-suporte">Suporte &amp; Transformação</button>
+    <button class="tab-btn" data-tab="operacao" role="tab" aria-selected="false" aria-controls="operacao" id="tab-operacao">Operação &amp; Gestão</button>
+    <button class="tab-btn" data-tab="conteudo" role="tab" aria-selected="false" aria-controls="conteudo" id="tab-conteudo">Conteúdo &amp; Marketing</button>
   </div>
   <button class="tabs-toggle" id="tabsToggle" aria-label="Recolher abas"></button>
 </nav>
 
+<div class="tools-search-wrap">
+  <input id="toolsSearch" class="tools-search" type="search" placeholder="Buscar ferramenta... (ex: CAC, ROI, UTM, SEO)" aria-label="Buscar ferramenta">
+  <span class="tools-search-meta" id="searchMeta" aria-live="polite"></span>
+</div>
+
 <main class="container">
 
   <!-- ============ TAB 1: AQUISIÇÃO & TRÁFEGO ============ -->
-  <section class="tab-panel active" id="aquisicao">
+  <section class="tab-panel active" id="aquisicao" role="tabpanel" aria-labelledby="tab-aquisicao">
     <div class="panel-head">
       <h2>Aquisição &amp; Tráfego</h2>
       <p>Medir saúde do funil, escala e eficiência de mídia paga.</p>
@@ -262,7 +288,7 @@
         <div class="result" id="u_res">
           <div class="copy-row">
             <input id="u_out" readonly>
-            <button class="btn btn-ghost" onclick="copyText('u_out')">Copiar</button>
+            <button class="btn btn-ghost" onclick="copyText('u_out', this)">Copiar</button>
           </div>
         </div>
       </article>
@@ -318,7 +344,7 @@
         <button class="btn btn-primary" onclick="gerarAdCopy()">Gerar copy</button>
         <div class="result" id="ad_res">
           <div class="answer-box" id="ad_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('ad_out')">Copiar</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('ad_out', this)">Copiar</button></div>
         </div>
       </article>
 
@@ -345,7 +371,7 @@
   </section>
 
   <!-- ============ TAB 2: LANÇAMENTO ============ -->
-  <section class="tab-panel" id="lancamento">
+  <section class="tab-panel" id="lancamento" role="tabpanel" aria-labelledby="tab-lancamento">
     <div class="panel-head">
       <h2>Lançamento</h2>
       <p>Planeje a timeline e simule a receita do seu lançamento.</p>
@@ -456,7 +482,7 @@
         <button class="btn btn-primary" onclick="gerarSeqEmail()">Gerar sequência</button>
         <div class="result" id="se_res">
           <div class="answer-box" id="se_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('se_out')">Copiar</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('se_out', this)">Copiar</button></div>
         </div>
       </article>
 
@@ -464,7 +490,7 @@
   </section>
 
   <!-- ============ TAB 3: FINANCEIRO ============ -->
-  <section class="tab-panel" id="financeiro">
+  <section class="tab-panel" id="financeiro" role="tabpanel" aria-labelledby="tab-financeiro">
     <div class="panel-head">
       <h2>Financeiro</h2>
       <p>Precifique certo, projete o caixa e dimensione o capital de giro.</p>
@@ -607,7 +633,7 @@
   </section>
 
   <!-- ============ TAB 4: VENDAS ============ -->
-  <section class="tab-panel" id="vendas">
+  <section class="tab-panel" id="vendas" role="tabpanel" aria-labelledby="tab-vendas">
     <div class="panel-head">
       <h2>Vendas</h2>
       <p>Defina metas, simule descontos e descubra o ticket médio ideal.</p>
@@ -689,7 +715,7 @@
         <button class="btn btn-primary" onclick="gerarScript()">Gerar script</button>
         <div class="result" id="so_res">
           <div class="answer-box" id="so_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('so_out')">Copiar</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('so_out', this)">Copiar</button></div>
         </div>
       </article>
 
@@ -736,7 +762,7 @@
   </section>
 
   <!-- ============ TAB 5: SUPORTE ============ -->
-  <section class="tab-panel" id="suporte">
+  <section class="tab-panel" id="suporte" role="tabpanel" aria-labelledby="tab-suporte">
     <div class="panel-head">
       <h2>Suporte &amp; Transformação</h2>
       <p>Meça satisfação, responda reclamações e garanta o SLA.</p>
@@ -782,7 +808,7 @@
         <button class="btn btn-primary" onclick="gerarResposta()">Gerar resposta</button>
         <div class="result" id="gr_res">
           <div class="answer-box" id="gr_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('gr_out')">Copiar resposta</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('gr_out', this)">Copiar resposta</button></div>
         </div>
       </article>
 
@@ -815,7 +841,7 @@
         <button class="btn btn-primary" onclick="gerarPesquisa()">Gerar perguntas</button>
         <div class="result" id="ps_res">
           <div class="answer-box" id="ps_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('ps_out')">Copiar</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('ps_out', this)">Copiar</button></div>
         </div>
       </article>
 
@@ -850,7 +876,7 @@
         <button class="btn btn-primary" onclick="gerarRespostaPub()">Gerar resposta</button>
         <div class="result" id="rp_res">
           <div class="answer-box" id="rp_out"></div>
-          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('rp_out')">Copiar</button></div>
+          <div class="copy-row"><button class="btn btn-ghost" onclick="copyText('rp_out', this)">Copiar</button></div>
         </div>
       </article>
 
@@ -858,7 +884,7 @@
   </section>
 
   <!-- ============ TAB 6: OPERAÇÃO ============ -->
-  <section class="tab-panel" id="operacao">
+  <section class="tab-panel" id="operacao" role="tabpanel" aria-labelledby="tab-operacao">
     <div class="panel-head">
       <h2>Operação &amp; Gestão</h2>
       <p>Audite a semana, planeje OKRs e priorize com Pareto/Eisenhower.</p>
@@ -984,7 +1010,7 @@
   </section>
 
   <!-- ============ TAB 7: CONTEÚDO & MARKETING ============ -->
-  <section class="tab-panel" id="conteudo">
+  <section class="tab-panel" id="conteudo" role="tabpanel" aria-labelledby="tab-conteudo">
     <div class="panel-head">
       <h2>Conteúdo &amp; Marketing</h2>
       <p>Planeje sua presença, meça o ROI de conteúdo e baixe peças prontas.</p>
@@ -1098,14 +1124,33 @@
 <footer class="site-footer">
   <div class="container">
     <div class="brand-row">
-      <img src="kodaros_logo.png" alt="KODAROS">
+      <img src="kodaros_logo.png" alt="KODAROS" width="120" height="32" loading="lazy">
       <span class="word">FERRAMENTAS</span>
     </div>
     <p>KODAROS · Ferramentas gratuitas e citáveis nos e-books · 100% client-side, sem IA.<br>
-    Conheça os e-books em <a href="https://kelvinoliveiracode.github.io/Kodaros/" target="_blank" rel="noopener">kodaros.com</a></p>
+    Conheça os e-books em <a href="https://kelvinoliveiracode.github.io/Kodaros/" target="_blank" rel="noopener">kodaros.com</a> · <a href="https://kelvinoliveiracode.github.io/kodarosferramentas/sitemap.xml">sitemap</a></p>
+    <p style="margin-top:10px; font-size:0.78rem; color:var(--color-text-dim)">Sem coleta de dados pessoais. Métricas anônimas em localStorage (<code>kodaros_events</code>). <a href="#" onclick="localStorage.clear(); alert('Dados locais limpos.'); return false;">Limpar dados locais</a></p>
   </div>
 </footer>
 
 <script src="script.js"></script>
+<!-- Analytics leve (descomente e troque o domínio quando ativar Plausible/Umami) -->
+<!-- <script defer data-domain="kelvinoliveiracode.github.io" src="https://plausible.io/js/script.js"></script> -->
+<script>
+// fallback: registra uso local para você medir ferramenta mais usada (ver localStorage kodaros_events)
+(function(){
+  const origShow = window.show;
+  if(origShow){
+    window.show = function(id){
+      origShow(id);
+      try{
+        const tool = document.getElementById(id)?.closest('.tool');
+        const tid = tool?.id || id;
+        if(window.trackEvent) window.trackEvent('calc', {tool: tid});
+      } catch(e){}
+    };
+  }
+})();
+</script>
 </body>
 </html>
