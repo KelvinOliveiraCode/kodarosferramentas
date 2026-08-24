@@ -28,7 +28,7 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
 
 /* ---------- Recolher abas ---------- */
 (function(){
-  const tabsEl = document.getElementById('tabs');
+  const tabsEl = document.getElementById('navTabs');
   const toggleBtn = document.getElementById('tabsToggle');
   if (!tabsEl || !toggleBtn) return;
   const up = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 15l-6-6-6 6"/></svg>';
