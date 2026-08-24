@@ -26,6 +26,29 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
   });
 });
 
+/* ---------- Recolher abas ---------- */
+(function(){
+  const tabsEl = document.getElementById('tabs');
+  const toggleBtn = document.getElementById('tabsToggle');
+  if (!tabsEl || !toggleBtn) return;
+  const up = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 15l-6-6-6 6"/></svg>';
+  const down = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>';
+  function updateToggle(){
+    const active = document.querySelector('.tab-btn.active');
+    const name = active ? active.textContent : 'Ferramentas';
+    if (tabsEl.classList.contains('collapsed')) {
+      toggleBtn.innerHTML = name + ' ' + down;
+      toggleBtn.setAttribute('aria-label', 'Mostrar abas de ferramentas');
+    } else {
+      toggleBtn.innerHTML = 'Recolher ' + up;
+      toggleBtn.setAttribute('aria-label', 'Recolher abas de ferramentas');
+    }
+  }
+  toggleBtn.addEventListener('click', function(){ tabsEl.classList.toggle('collapsed'); updateToggle(); });
+  document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', updateToggle));
+  updateToggle();
+})();
+
 /* ---------- Copiar ---------- */
 function copyText(id){
   const t = document.getElementById(id).innerText || document.getElementById(id).value || '';

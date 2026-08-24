@@ -180,6 +180,20 @@ main, .site-footer, .navbar, .tabs { position: relative; z-index: 1; }
     max-width: 1200px; margin: 0 auto; padding: 0 32px;
     display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center;
 }
+.tabs-toggle {
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%); z-index: 2;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; color: #fff;
+    background: rgba(255, 255, 255, 0.06); border: 1px solid var(--color-border);
+    padding: 8px 15px; border-radius: 999px; cursor: pointer; transition: all var(--transition-normal);
+    white-space: nowrap;
+}
+.tabs-toggle:hover { background: rgba(139, 92, 246, 0.18); border-color: var(--color-accent-soft); }
+.tabs-toggle svg { transition: transform var(--transition-normal); }
+.tabs.collapsed { padding: 10px 0; }
+.tabs.collapsed .tabs-inner { display: none; }
+.tabs.collapsed .tabs-toggle { position: static; transform: none; margin: 0 auto; display: flex; }
+@media (max-width: 768px) { .tabs-toggle { right: 12px; padding: 7px 12px; } }
 .tab-btn {
     font-family: var(--font-body); font-size: 0.9rem; font-weight: 600; color: var(--color-text-muted);
     background: rgba(255, 255, 255, 0.03); border: 1px solid var(--color-border);
