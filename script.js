@@ -482,6 +482,203 @@ function calcPareto(){
 }
 
 /* =========================================================
+   NOVAS FERRAMENTAS (acrescentadas)
+   ========================================================= */
+
+/* ---- TAB 1 extras ---- */
+function calcCPL(){
+  const ticket=numv('cpl_ticket'), marg=numv('cpl_marg')/100, conv=numv('cpl_conv')/100;
+  if(!conv){ alert('Informe a conversão lead→venda.'); return; }
+  const cacMax=ticket*marg, cpl=cacMax*conv;
+  document.getElementById('cpl_val').textContent=brl(cpl);
+  document.getElementById('cpl_cac').textContent=brl(cacMax);
+  show('cpl_res');
+}
+function gerarAdCopy(){
+  const prod=val('ad_prod')||'Seu produto', pub=val('ad_pub')||'seu público',
+        dor=val('ad_dor')||'', ben=val('ad_ben')||'', prova=val('ad_prova')||'';
+  let t=`Para ${pub} que sofrem com ${dor}:\n\n${prod} entrega ${ben}.\n\nComprovado por ${prova}.\n\nClique e descubra como.`;
+  document.getElementById('ad_out').textContent=t;
+  show('ad_res');
+}
+function simAB(){
+  const a=numv('ab_ctra'), b=numv('ab_ctrb'), imp=numv('ab_imp');
+  if(!imp){ alert('Informe as impressões.'); return; }
+  const cliA=imp*a/100, cliB=imp*b/100;
+  document.getElementById('ab_win').textContent='Variação '+(b>=a?'B':'A');
+  document.getElementById('ab_cli').textContent='+'+num(Math.abs(cliB-cliA));
+  document.getElementById('ab_box').className='res '+(Math.abs(b-a)>0?'good':'');
+  show('ab_res');
+}
+
+/* ---- TAB 2 extras ---- */
+function calcCronInvertido(){
+  const fim=val('ci_fim');
+  if(!fim){ alert('Escolha a data de fechamento.'); return; }
+  let d=new Date(fim+'T00:00:00');
+  const fases=[['Fechamento',numv('ci_fecha')],['Pico',numv('ci_pico')],['Abertura',numv('ci_abre')],['Pré-lançamento',numv('ci_pre')]];
+  const tb=document.querySelector('#ci_tbl tbody'); tb.innerHTML='';
+  for(let i=fases.length-1;i>=0;i--){
+    const dur=fases[i][1], termino=d, inicio=addDays(d, -dur);
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${fases[i][0]}</td><td>${fmtDate(inicio)}</td><td>${fmtDate(termino)}</td>`;
+    tb.appendChild(tr); d=inicio;
+  }
+  show('ci_res');
+}
+function calcCPE(){
+  const inv=numv('cpe_inv'), ins=numv('cpe_ins');
+  if(!ins){ alert('Informe os inscritos.'); return; }
+  document.getElementById('cpe_val').textContent=brl(inv/ins);
+  show('cpe_res');
+}
+function gerarSeqEmail(){
+  const nome=val('se_nome')||'Lançamento';
+  const e=[
+    `E-mail 1 — Aquecimento: conteúdo educativo sobre o problema que ${nome} resolve.`,
+    `E-mail 2 — História: mostre a jornada e a transformação do seu método.`,
+    `E-mail 3 — Abertura: divulgue que as inscrições abriram, com benefícios.`,
+    `E-mail 4 — Pico: apresente depoimentos e a oferta principal.`,
+    `E-mail 5 — Fechamento: último aviso de encerramento e bônus.`
+  ];
+  document.getElementById('se_out').textContent=e.join('\n\n');
+  show('se_res');
+}
+
+/* ---- TAB 3 extras ---- */
+function calcEquilibrio(){
+  const fixo=numv('pe_fixo'), preco=numv('pe_preco'), cv=numv('pe_cv');
+  const mc=preco-cv;
+  if(mc<=0){ alert('O preço deve ser maior que o custo variável.'); return; }
+  document.getElementById('pe_cli').textContent=num(fixo/mc);
+  document.getElementById('pe_marg').textContent=brl(mc);
+  show('pe_res');
+}
+function calcJuros(){
+  const aporte=numv('jc_aporte'), taxa=numv('jc_taxa')/100, meses=Math.max(1,Math.round(numv('jc_mes')));
+  let total=0;
+  for(let i=1;i<=meses;i++){ total=(total+aporte)*(1+taxa); }
+  document.getElementById('jc_total').textContent=brl(total);
+  document.getElementById('jc_rend').textContent=brl(total-aporte*meses);
+  show('jc_res');
+}
+function calcProLabore(){
+  const lucro=numv('pl_lucro'), pl=numv('pl_pl')/100;
+  document.getElementById('pl_pro').textContent=brl(lucro*pl);
+  document.getElementById('pl_dist').textContent=brl(lucro*(1-pl));
+  show('pl_res');
+}
+
+/* ---- TAB 4 extras ---- */
+function gerarScript(){
+  const obj=val('so_obj')||'objeção', prod=val('so_prod')||'produto', ben=val('so_ben')||'', prova=val('so_prova')||'';
+  let t=`Cliente: "${obj}".\n\nEu entendo. Muitos sentem isso no início.\nO que o ${prod} entrega é justamente ${ben}.\nTemos ${prova} que comprovam o resultado.\nPosso te mostrar como fazer sentido para o seu caso?`;
+  document.getElementById('so_out').textContent=t;
+  show('so_res');
+}
+function calcFunilVendas(){
+  const lead=numv('fv_lead'), prop=numv('fv_prop'), fecha=numv('fv_fecha');
+  if(!lead){ alert('Informe os leads.'); return; }
+  document.getElementById('fv_lp').textContent=pct(prop/lead*100);
+  document.getElementById('fv_pf').textContent=pct(fecha/prop*100);
+  document.getElementById('fv_geral').textContent=pct(fecha/lead*100);
+  show('fv_res');
+}
+function calcFollow(){
+  const lead=numv('fu_lead'), tx=numv('fu_tx')/100, tent=Math.max(1,Math.round(numv('fu_tent')));
+  if(!lead){ alert('Informe os leads.'); return; }
+  const resp=lead*(1-Math.pow(1-tx,tent)), base=lead*tx;
+  document.getElementById('fu_resp').textContent=num(resp);
+  document.getElementById('fu_extra').textContent='+'+num(resp-base);
+  show('fu_res');
+}
+
+/* ---- TAB 5 extras ---- */
+function gerarPesquisa(){
+  const p=[
+    'De 1 a 5, quão satisfeito você está com o atendimento?',
+    'O problema relatado foi resolvido na primeira interação?',
+    'O tempo de resposta atendeu sua expectativa?',
+    'Você recomendaria a KODAROS para um colega? (0-10)',
+    'O que poderíamos melhorar no suporte?'
+  ];
+  document.getElementById('ps_out').textContent=p.map((x,i)=>(i+1)+'. '+x).join('\n');
+  show('ps_res');
+}
+function calcValorRec(){
+  const cli=numv('vr_cli'), ticket=numv('vr_ticket'), tx=numv('vr_tx')/100;
+  document.getElementById('vr_val').textContent=brl(cli*ticket*tx);
+  show('vr_res');
+}
+function gerarRespostaPub(){
+  const nome=val('rp_nome')||'Cliente', canal=val('rp_canal')||'', prob=val('rp_prob')||'';
+  let t=`Oi, ${nome}! Obrigado por compartilhar isso no ${canal}.\nLamentamos o ocorrido com: ${prob}.\nJá identificamos a causa e vamos resolver. Pode nos chamar na DM para alinharmos a solução?`;
+  document.getElementById('rp_out').textContent=t;
+  show('rp_res');
+}
+
+/* ---- TAB 6 extras ---- */
+function copiarSWOT(){
+  const t=`SWOT\n\nForças:\n${val('sw_forcas')}\n\nFraquezas:\n${val('sw_fraquezas')}\n\nOportunidades:\n${val('sw_op')}\n\nAmeaças:\n${val('sw_am')}`;
+  navigator.clipboard.writeText(t).then(function(){
+    if(event && event.target){ event.target.textContent='Copiado!'; setTimeout(function(){ event.target.textContent='Copiar SWOT'; }, 1500); }
+  });
+}
+function calcHoraFat(){
+  const meta=numv('hf_meta'), horas=numv('hf_horas'), marg=numv('hf_marg')/100;
+  if(!horas){ alert('Informe as horas faturáveis.'); return; }
+  document.getElementById('hf_val').textContent=brl(meta/horas*(1+marg));
+  show('hf_res');
+}
+function calcMetasAn(){
+  const meta=numv('ma_meta'), mes=Math.max(1,Math.round(numv('ma_mes')));
+  document.getElementById('ma_mensal').textContent=brl(meta/mes);
+  document.getElementById('ma_semanal').textContent=brl(meta/mes/4.3);
+  show('ma_res');
+}
+
+/* ---- TAB 7 ---- */
+function calcCalendario(){
+  const sem=numv('ce_sem'), semanas=numv('ce_semanas'), total=sem*semanas;
+  document.getElementById('ce_total').textContent=num(total);
+  document.getElementById('ce_mes').textContent=num(sem*4.33);
+  show('ce_res');
+}
+function calcROIConteudo(){
+  const inv=numv('rc_inv'), leads=numv('rc_leads'), conv=numv('rc_conv')/100, ticket=numv('rc_ticket');
+  const rec=leads*conv*ticket, roi=inv?(rec-inv)/inv*100:0;
+  document.getElementById('rc_roi').textContent=(roi>=0?'+':'')+pct(roi);
+  document.getElementById('rc_rec').textContent=brl(rec);
+  show('rc_res');
+}
+const SEO_ITEMS=[
+  'Título da página com palavra-chave principal',
+  'Meta description única e atrativa',
+  'URL amigável (sem caracteres especiais)',
+  'Imagens com atributo alt descritivo',
+  'Estrutura de headings (H1/H2/H3)',
+  'Conteúdo original e atualizado',
+  'Links internos para páginas relevantes',
+  'Velocidade de carregamento otimizada',
+  'Sitemap e robots.txt configurados',
+  'Dados estruturados (schema)'
+];
+(function(){
+  const box=document.getElementById('seo_list');
+  if(box) box.innerHTML=SEO_ITEMS.map((t,i)=>`<div class="check-item"><input type="checkbox" id="seo_${i}"><label for="seo_${i}">${t}</label></div>`).join('');
+})();
+function calcSEO(){
+  let ok=0;
+  for(let i=0;i<SEO_ITEMS.length;i++){ if(document.getElementById('seo_'+i).checked) ok++; }
+  const score=Math.round(ok/SEO_ITEMS.length*100);
+  document.getElementById('seo_score').textContent=score;
+  document.getElementById('seo_chk').textContent=ok+'/'+SEO_ITEMS.length;
+  document.getElementById('seo_bar').style.width=score+'%';
+  document.getElementById('seo_box').className='res '+(score>=80?'good':(score<50?'bad':''));
+  show('seo_res');
+}
+
+/* =========================================================
    MÓDULOS DE IDENTIDADE VISUAL (espelham o site principal)
    ========================================================= */
 document.addEventListener('DOMContentLoaded', function() {
@@ -498,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let stars = [], nebulas = [], shootingStars = [], time = 0, nextShootingStar = 400, animId = null;
     const galaxyCenter = { x: 0.72, y: 0.30 };
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-    const palette = ['#ffffff', '#c7d2fe', '#a5b4fc', '#bfdbfe', '#f0abfc', '#fde68a'];
+    const palette = ['#ffffff', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#cfcfcf', '#bdbdbd'];
     function rand(a, b) { return a + Math.random() * (b - a); }
     function createStars() {
       stars = [];
@@ -513,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function createNebulas() {
       nebulas = [];
-      const defs = [{color:'124, 58, 237',alpha:0.15},{color:'34, 211, 238',alpha:0.10},{color:'236, 72, 153',alpha:0.10},{color:'99, 102, 241',alpha:0.11}];
+      const defs = [{color:'255, 255, 255',alpha:0.10},{color:'255, 255, 255',alpha:0.06},{color:'200, 200, 200',alpha:0.06},{color:'160, 160, 160',alpha:0.05}];
       for (let i = 0; i < 6; i++) { const d = defs[i % defs.length]; nebulas.push({ x: rand(0,width), y: rand(0,height), radius: rand(Math.min(width,height)*0.28, Math.min(width,height)*0.55), color: d.color, alpha: d.alpha, pulse: rand(0.10,0.30), phase: rand(0,Math.PI*2) }); }
     }
     function drawNebulas() {
@@ -623,3 +820,82 @@ document.addEventListener('DOMContentLoaded', function() {
     (function loop() { if (isTabActive && inWin) { cgx += (gx - cgx)*0.08; cgy += (gy - cgy)*0.08; g.style.left = cgx+'px'; g.style.top = cgy+'px'; } requestAnimationFrame(loop); })();
   })();
 });
+
+/* =========================================================
+   TEMPLATES EDITÁVEIS (cartão, post, cupom) — baixar PNG
+   ========================================================= */
+(function initTemplates(){
+  const imgs={cartao:null, post:null, cupom:null};
+  function loadImg(input, key){
+    const file=input.files && input.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(e){ const img=new Image(); img.onload=function(){ imgs[key]=img; renderers[key](); }; img.src=e.target.result; };
+    reader.readAsDataURL(file);
+  }
+  function wrapText(ctx, text, cx, cy, maxW, lh){
+    const words=text.split(' '); let line='', lines=[];
+    for(const w of words){ const test=line?line+' '+w:w; if(ctx.measureText(test).width>maxW && line){ lines.push(line); line=w; } else line=test; }
+    if(line) lines.push(line);
+    const startY=cy-(lines.length-1)*lh/2;
+    lines.forEach((l,i)=>ctx.fillText(l, cx, startY+i*lh));
+  }
+  function renderCartao(){
+    const c=document.getElementById('cartao_canvas'); if(!c) return; const x=c.getContext('2d');
+    const W=c.width, H=c.height;
+    x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(255,255,255,0.35)'; x.lineWidth=2; x.strokeRect(28,28,W-56,H-56);
+    let lx=70;
+    if(imgs.cartao){ const s=120; x.drawImage(imgs.cartao, lx, 95, s, s); lx=lx+s+34; }
+    x.textBaseline='top'; x.textAlign='left';
+    x.fillStyle='#FFFFFF'; x.font='700 52px Figtree, Arial, sans-serif'; x.fillText(val('cartao_nome')||'', lx, 110);
+    x.fillStyle='#A3A3A3'; x.font='400 28px Figtree, Arial, sans-serif'; x.fillText(val('cartao_cargo')||'', lx, 178);
+    x.strokeStyle='rgba(255,255,255,0.2)'; x.beginPath(); x.moveTo(70,285); x.lineTo(W-70,285); x.stroke();
+    x.fillStyle='#F5F5F5'; x.font='400 24px Figtree, Arial, sans-serif';
+    x.fillText(val('cartao_tel')||'', 70, 300);
+    x.fillText(val('cartao_email')||'', 70, 340);
+    x.fillText(val('cartao_site')||'', 70, 380);
+  }
+  function renderPost(){
+    const c=document.getElementById('post_canvas'); if(!c) return; const x=c.getContext('2d');
+    const W=c.width, H=c.height;
+    x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(255,255,255,0.25)'; x.lineWidth=3; x.strokeRect(40,40,W-80,H-80);
+    if(imgs.post){ const s=150; x.drawImage(imgs.post, W/2-s/2, 90, s, s); }
+    x.fillStyle='#FFFFFF'; x.textAlign='center'; x.textBaseline='middle';
+    x.font='700 64px Figtree, Arial, sans-serif';
+    wrapText(x, val('post_frase')||'', W/2, H/2, W-260, 78);
+    x.fillStyle='#A3A3A3'; x.font='500 34px Figtree, Arial, sans-serif';
+    x.fillText(val('post_autor')||'', W/2, H-110);
+    x.textAlign='left';
+  }
+  function renderCupom(){
+    const c=document.getElementById('cupom_canvas'); if(!c) return; const x=c.getContext('2d');
+    const W=c.width, H=c.height;
+    x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
+    x.strokeStyle='rgba(255,255,255,0.3)'; x.lineWidth=3; x.strokeRect(40,40,W-80,H-80);
+    x.textAlign='center'; x.textBaseline='middle'; x.fillStyle='#FFFFFF';
+    x.font='800 70px Figtree, Arial, sans-serif'; x.fillText(val('cupom_tit')||'', W/2, 230);
+    x.font='800 130px Figtree, Arial, sans-serif'; x.fillText(val('cupom_desc')||'', W/2, 470);
+    x.fillStyle='#A3A3A3'; x.font='500 40px Figtree, Arial, sans-serif'; x.fillText(val('cupom_val')||'', W/2, 660);
+    x.fillStyle='#F5F5F5'; x.font='700 48px Figtree, Arial, sans-serif'; x.fillText('Cupom: '+(val('cupom_cod')||''), W/2, 820);
+    x.textAlign='left';
+  }
+  const renderers={cartao:renderCartao, post:renderPost, cupom:renderCupom};
+  ['cartao_nome','cartao_cargo','cartao_tel','cartao_email','cartao_site'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCartao); });
+  ['post_frase','post_autor'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderPost); });
+  ['cupom_tit','cupom_desc','cupom_val','cupom_cod'].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener('input', renderCupom); });
+  const ci=document.getElementById('cartao_img'); if(ci) ci.addEventListener('change', function(){ loadImg(ci,'cartao'); });
+  const pi=document.getElementById('post_img'); if(pi) pi.addEventListener('change', function(){ loadImg(pi,'post'); });
+  document.querySelectorAll('[data-tpl]').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      const key=btn.dataset.tpl, c=document.getElementById(key+'_canvas');
+      if(!c) return;
+      const link=document.createElement('a');
+      link.download='kodaros-'+key+'.png';
+      link.href=c.toDataURL('image/png');
+      link.click();
+    });
+  });
+  renderCartao(); renderPost(); renderCupom();
+})();
