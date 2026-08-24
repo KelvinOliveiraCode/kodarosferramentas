@@ -692,7 +692,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let dpr = window.devicePixelRatio || 1, width = 0, height = 0;
-    let stars = [], nebulas = [], shootingStars = [], time = 0, nextShootingStar = 400, animId = null;
+    let stars = [], nebulas = [], shootingStars = [], planets = [], time = 0, nextShootingStar = 400, animId = null;
     const galaxyCenter = { x: 0.72, y: 0.30 };
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
     const palette = ['#ffffff', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#cfcfcf', '#bdbdbd'];
@@ -744,12 +744,37 @@ document.addEventListener('DOMContentLoaded', function() {
         ctx.strokeStyle = g; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx*5, s.y - s.vy*5); ctx.stroke();
       }
     }
-    function resize() { dpr = window.devicePixelRatio || 1; width = window.innerWidth; height = window.innerHeight; canvas.width = width*dpr; canvas.height = height*dpr; canvas.style.width = width+'px'; canvas.style.height = height+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); createStars(); createNebulas(); }
+    function createPlanets() {
+      planets = [];
+      const defs = [
+        { color: '#FFFFFF', light: '#FFFFFF', ring: 'rgba(255,255,255,0.40)', dist: 220, size: 24, speed: 0.0007 },
+        { color: '#D4D4D4', light: '#F5F5F5', ring: 'rgba(255,255,255,0.30)', dist: 330, size: 16, speed: -0.0005 },
+        { color: '#8A8A8A', light: '#BDBDBD', ring: 'rgba(255,255,255,0.25)', dist: 150, size: 30, speed: 0.0010 },
+        { color: '#FFFFFF', light: '#FFFFFF', ring: 'rgba(255,255,255,0.30)', dist: 450, size: 12, speed: 0.00035 }
+      ];
+      for (const d of defs) planets.push({ angle: Math.random()*Math.PI*2, dist: d.dist, size: d.size, speed: d.speed, color: d.color, light: d.light, ring: d.ring });
+    }
+    function drawPlanets() {
+      const cx = width*galaxyCenter.x, cy = height*galaxyCenter.y;
+      for (const p of planets) {
+        p.angle += p.speed;
+        const ix = cx + Math.cos(p.angle)*p.dist;
+        const iy = cy + Math.sin(p.angle)*p.dist*0.62;
+        const g = ctx.createRadialGradient(ix - p.size*0.3, iy - p.size*0.3, p.size*0.1, ix, iy, p.size);
+        g.addColorStop(0, p.light); g.addColorStop(1, p.color);
+        ctx.globalAlpha = 0.95; ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(ix, iy, p.size, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 0.5; ctx.strokeStyle = p.ring; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(ix, iy, p.size*1.5, p.size*0.5, p.angle, 0, Math.PI*2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      }
+    }
+    function resize() { dpr = window.devicePixelRatio || 1; width = window.innerWidth; height = window.innerHeight; canvas.width = width*dpr; canvas.height = height*dpr; canvas.style.width = width+'px'; canvas.style.height = height+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); createStars(); createNebulas(); createPlanets(); }
     function animate() {
       if (isTabActive) {
         time += 1; mouse.x += (mouse.tx - mouse.x)*0.05; mouse.y += (mouse.ty - mouse.y)*0.05;
         if (time > nextShootingStar) { spawn(); nextShootingStar = time + rand(260,640); }
-        ctx.clearRect(0,0,width,height); drawNebulas(); drawShooting(); drawStars();
+        ctx.clearRect(0,0,width,height); drawNebulas(); drawShooting(); drawStars(); drawPlanets();
       }
       animId = requestAnimationFrame(animate);
     }
