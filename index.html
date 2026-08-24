@@ -16,19 +16,56 @@
 </head>
 <body>
 
-<header class="site-header">
-  <div class="container">
-    <div class="brand-row">
+<canvas id="particle-canvas" aria-hidden="true" role="presentation"></canvas>
+
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a href="#inicio" class="nav-logo">
       <img src="kodaros_logo.png" alt="KODAROS">
-      <span class="word">FERRAMENTAS</span>
+    </a>
+    <a href="https://kelvinoliveiracode.github.io/Kodaros/" target="_blank" rel="noopener" class="nav-cta">
+      <span>Site principal KODAROS</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-container">
+    <div class="hero-content">
+      <span class="hero-label" data-text="Gratuito • Sem IA • Client-side">Gratuito • Sem IA • Client-side</span>
+      <h1 class="hero-title">
+        <span class="word-reveal">Ferramentas</span>
+        <span class="word-reveal">que</span>
+        <span class="word-reveal">fazem</span>
+        <span class="word-reveal">seu</span>
+        <span class="word-reveal">negócio</span>
+        <span class="word-reveal text-gradient">crescer.</span>
+      </h1>
+      <p class="hero-subtitle">Calculadoras e geradores determinísticos, citáveis nos e-books da KODAROS. Tudo roda no seu navegador — use quantas vezes quiser, sem custo.</p>
+      <div class="hero-buttons">
+        <a href="#aquisicao" class="btn btn-primary">
+          <span>Explorar ferramentas</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a href="https://kelvinoliveiracode.github.io/Kodaros/" target="_blank" rel="noopener" class="btn btn-ghost">
+          <span>Ver e-books</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+        </a>
+      </div>
     </div>
-    <div class="page-intro">
-      <span class="eyebrow">Gratuito • Sem IA • Client-side</span>
-      <h1>Ferramentas para o seu negócio crescer</h1>
-      <p>Calculadoras e geradores determinísticos, citáveis nos e-books da KODAROS. Use quantas vezes quiser — tudo roda no seu navegador.</p>
+    <div class="hero-visual">
+      <div class="hero-icon-svg">
+        <img src="kodaros_icon.png" alt="Ícone KODAROS" class="hero-icon-img">
+      </div>
     </div>
   </div>
-</header>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+  </div>
+</section>
 
 <nav class="tabs container" id="tabs">
   <button class="tab-btn active" data-tab="aquisicao">Aquisição &amp; Tráfego</button>
