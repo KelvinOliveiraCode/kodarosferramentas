@@ -288,7 +288,7 @@ table.tbl { width: 100%; border-collapse: collapse; margin-top: 14px; font-size:
 table.tbl th, table.tbl td { border: 1px solid var(--color-border); padding: 8px 10px; text-align: right; }
 table.tbl th { background: rgba(255, 255, 255, 0.10); color: #fff; font-size: 0.72rem; letter-spacing: .04em; font-weight: 600; }
 table.tbl td:first-child, table.tbl th:first-child { text-align: left; }
-tr.gargalo td { background: rgba(248, 113, 113, 0.14); font-weight: 700; color: #FCA5A5; }
+tr.gargalo td { background: rgba(255, 255, 255, 0.10); font-weight: 700; color: #FFFFFF; }
 tr.total td { font-weight: 700; color: #fff; border-top: 2px solid rgba(255, 255, 255, 0.35); }
 
 .copy-row { display: flex; gap: 8px; margin-top: 10px; position: relative; z-index: 1; }
@@ -340,6 +340,13 @@ tr.total td { font-weight: 700; color: #fff; border-top: 2px solid rgba(255, 255
 .tpl-preview { width: 100%; max-width: 320px; border: 1px solid var(--color-border); border-radius: 10px; background: #000; display: block; margin-top: 8px; }
 .tpl-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .nav-logo img, .site-footer .brand-row img { filter: grayscale(1); }
+
+/* ===== SCROLLBAR (neutro) ===== */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #2E2E2E; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #4A4A4A; }
+* { scrollbar-color: #2E2E2E #0A0A0A; scrollbar-width: thin; }
 
 /* ===== SCROLL REVEAL ===== */
 .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1s var(--ease-out-expo), transform 1s var(--ease-out-expo); }
