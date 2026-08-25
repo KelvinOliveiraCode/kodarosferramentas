@@ -291,27 +291,11 @@ function exportToolResult(toolId, btn){
   }
 }
 
-/* ---------- Recolher abas ---------- */
+/* ---------- Recolher abas (removido — botão recolher não é mais necessário) ---------- */
 (function(){
   const tabsEl = document.getElementById('tabs');
-  const toggleBtn = document.getElementById('tabsToggle');
-  if (!tabsEl || !toggleBtn) return;
-  const up = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 15l-6-6-6 6"/></svg>';
-  const down = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>';
-  function updateToggle(){
-    const active = document.querySelector('.tab-btn.active');
-    const name = active ? active.textContent : 'Ferramentas';
-    if (tabsEl.classList.contains('collapsed')) {
-      toggleBtn.innerHTML = name + ' ' + down;
-      toggleBtn.setAttribute('aria-label', 'Mostrar abas de ferramentas');
-    } else {
-      toggleBtn.innerHTML = 'Recolher ' + up;
-      toggleBtn.setAttribute('aria-label', 'Recolher abas de ferramentas');
-    }
-  }
-  toggleBtn.addEventListener('click', function(){ tabsEl.classList.toggle('collapsed'); updateToggle(); });
-  document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', updateToggle));
-  updateToggle();
+  if (!tabsEl) return;
+  tabsEl.classList.remove('collapsed');
 })();
 
 /* ---------- Auto-cálculo + Validação + Persistência ---------- */
@@ -1235,15 +1219,14 @@ document.addEventListener('DOMContentLoaded', function() {
   /* ---- NAVBAR ---- */
   (function initNavbar() {
     const navbar = document.getElementById('navbar'); if (!navbar) return;
-    let last = window.pageYOffset, ticking = false, t;
     function handle() {
-      const cur = window.pageYOffset, delta = cur - last, dir = delta > 0 ? 'down' : 'up';
+      const cur = window.pageYOffset;
       if (cur > 30) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
-      if (dir === 'down' && cur > 80 && Math.abs(delta) > 2) { navbar.classList.add('hidden'); navbar.classList.remove('visible'); }
-      else if (dir === 'up') { navbar.classList.remove('hidden'); navbar.classList.add('visible'); }
-      last = cur; ticking = false;
+      // mantém navbar sempre visível e fixa no topo (sem esconder no scroll)
+      navbar.classList.remove('hidden');
+      navbar.classList.add('visible');
     }
-    window.addEventListener('scroll', () => { clearTimeout(t); if (!ticking) { requestAnimationFrame(handle); ticking = true; } t = setTimeout(() => { navbar.classList.remove('hidden'); navbar.classList.add('visible'); }, 150); }, { passive: true });
+    window.addEventListener('scroll', handle, { passive: true });
     handle();
   })();
 
