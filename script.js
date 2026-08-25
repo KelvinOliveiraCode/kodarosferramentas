@@ -250,13 +250,13 @@ function exportToolResult(toolId, btn){
     const W=900, H= 220 + lines.length*26;
     c.width=W; c.height=Math.min(H, 1800);
     const x=c.getContext('2d');
-    x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,c.height);
-    x.strokeStyle='rgba(255,255,255,0.18)'; x.strokeRect(16,16,W-32,c.height-32);
-    x.fillStyle='#FFFFFF'; x.font='700 22px Figtree, Arial, sans-serif';
+    x.fillStyle='#0B0F1A'; x.fillRect(0,0,W,c.height);
+    x.strokeStyle='rgba(255,255,255,0.08)'; x.strokeRect(16,16,W-32,c.height-32);
+    x.fillStyle='#E6E8EE'; x.font='700 22px Figtree, Arial, sans-serif';
     x.fillText(h3, 32, 48);
-    x.fillStyle='#A3A3A3'; x.font='500 13px Figtree, Arial, sans-serif';
+    x.fillStyle='#9AA3B8'; x.font='500 13px Figtree, Arial, sans-serif';
     x.fillText('KODAROS • kodarosferramentas', 32, 70);
-    x.fillStyle='#F5F5F5'; x.font='400 15px Figtree, Arial, sans-serif';
+    x.fillStyle='#E6E8EE'; x.font='400 15px Figtree, Arial, sans-serif';
     let y=110;
     x.textBaseline='top';
     // wrap long lines
@@ -1153,7 +1153,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let stars = [], nebulas = [], shootingStars = [], time = 0, nextShootingStar = 400, animId = null;
     const galaxyCenter = { x: 0.72, y: 0.30 };
     const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-    const palette = ['#ffffff', '#f5f5f5', '#e5e5e5', '#d4d4d4', '#cfcfcf', '#bdbdbd'];
+    const palette = ['#E6E8EE', '#9AA3B8', '#C5A46A'];
     function rand(a, b) { return a + Math.random() * (b - a); }
     function createStars() {
       stars = [];
@@ -1168,7 +1168,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function createNebulas() {
       nebulas = [];
-      const defs = [{color:'255, 255, 255',alpha:0.10},{color:'255, 255, 255',alpha:0.06},{color:'200, 200, 200',alpha:0.06},{color:'160, 160, 160',alpha:0.05}];
+      const defs = [{color:'59, 91, 254',alpha:0.05},{color:'197, 164, 106',alpha:0.03},{color:'59, 91, 254',alpha:0.04}];
       for (let i = 0; i < 6; i++) { const d = defs[i % defs.length]; nebulas.push({ x: rand(0,width), y: rand(0,height), radius: rand(Math.min(width,height)*0.28, Math.min(width,height)*0.55), color: d.color, alpha: d.alpha, pulse: rand(0.10,0.30), phase: rand(0,Math.PI*2) }); }
     }
     function drawNebulas() {
