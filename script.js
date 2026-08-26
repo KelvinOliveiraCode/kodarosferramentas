@@ -302,7 +302,7 @@ window.addEventListener('hashchange', function(){
   });
 })();
 
-/* ---------- Tooltips "Como este calculo funciona" ---------- */
+/* ---------- Tooltips "Como esta ferramenta funciona" ---------- */
 (function initFormulas(){
   const FORMULAS={};
   FORMULAS['CAC & LTV']='CAC = Gasto com aquisi\u00e7\u00e3o \u00f7 Clientes adquiridos. LTV = Ticket \u00d7 Frequ\u00eancia \u00d7 (Reten\u00e7\u00e3o \u00f7 12) \u00d7 Margem. Rela\u00e7\u00e3o saud\u00e1vel: LTV:CAC \u2265 3:1. Payback = CAC \u00f7 lucro mensal por cliente.';
@@ -363,7 +363,7 @@ window.addEventListener('hashchange', function(){
     const det=document.createElement('details');
     det.className='tool-formula';
     const sum=document.createElement('summary');
-    sum.textContent='Como este c\u00e1lculo funciona';
+    sum.textContent='Como esta ferramenta funciona';
     const body=document.createElement('div');
     body.className='tool-formula-body';
     body.textContent=text;
