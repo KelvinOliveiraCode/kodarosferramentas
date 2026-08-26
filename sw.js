@@ -1,5 +1,5 @@
 /* KODAROS FERRAMENTAS — Service Worker (offline-first) */
-const CACHE = 'kodaros-tools-v1';
+const CACHE = 'kodaros-tools-v2';
 const CORE = [
   './',
   'index.html',
