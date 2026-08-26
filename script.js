@@ -184,6 +184,198 @@ window.addEventListener('hashchange', function(){
     }
   });
 })();
+
+/* ---------- Favoritos + Recentes (localStorage) ---------- */
+(function initFavsRecent(){
+  const FAV_KEY='kodaros_favs', REC_KEY='kodaros_recent';
+  function loadArr(k){ try{ const a=JSON.parse(localStorage.getItem(k)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+  function saveArr(k,a){ try{ localStorage.setItem(k, JSON.stringify(a)); }catch(e){} }
+  let favs=loadArr(FAV_KEY), recent=loadArr(REC_KEY);
+  const wrap=document.getElementById('favBarWrap');
+  const favBox=document.getElementById('favBarFavs');
+  const recBox=document.getElementById('favBarRecent');
+
+  function toolName(id){
+    const t=document.getElementById(id);
+    const h3=t ? t.querySelector('h3') : null;
+    return h3 ? h3.textContent.trim() : id;
+  }
+
+  // botao estrela em cada ferramenta
+  document.querySelectorAll('.tool').forEach(function(tool){
+    if(!tool.id) return;
+    const head=tool.querySelector('.tool-head');
+    if(!head || head.querySelector('.star-btn')) return;
+    const btn=document.createElement('button');
+    btn.className='star-btn';
+    btn.type='button';
+    btn.innerHTML='&#9733;';
+    btn.title='Favoritar ferramenta';
+    const on=favs.includes(tool.id);
+    btn.setAttribute('aria-pressed', on?'true':'false');
+    btn.setAttribute('aria-label','Favoritar '+toolName(tool.id));
+    if(on){ tool.classList.add('fav'); btn.classList.add('on'); }
+    btn.addEventListener('click', function(){ toggleFav(tool.id); });
+    head.appendChild(btn);
+  });
+
+  function toggleFav(id){
+    const i=favs.indexOf(id);
+    if(i>=0) favs.splice(i,1); else favs.push(id);
+    saveArr(FAV_KEY,favs);
+    const tool=document.getElementById(id);
+    if(tool){
+      const on=favs.includes(id);
+      tool.classList.toggle('fav', on);
+      const sb=tool.querySelector('.star-btn');
+      if(sb){ sb.classList.toggle('on', on); sb.setAttribute('aria-pressed', on?'true':'false'); }
+    }
+    renderChips();
+    trackEvent('favorite', {tool:id, on:favs.includes(id)});
+  }
+
+  function makeChip(label,id,isFav){
+    const b=document.createElement('button');
+    b.className='chip'+(isFav?' chip-fav':'');
+    b.type='button';
+    b.textContent=(isFav?'\u2605 ':'')+label;
+    b.title=label+' \u2014 abrir ferramenta';
+    b.addEventListener('click', function(){
+      const tool=document.getElementById(id);
+      if(!tool) return;
+      const panel=tool.closest('.tab-panel');
+      if(panel) activateTab(panel.id,true);
+      setTimeout(function(){ tool.scrollIntoView({behavior:'smooth', block:'start'}); },150);
+      trackEvent('open_chip',{tool:id});
+    });
+    return b;
+  }
+
+  function renderChips(){
+    if(!wrap || !favBox || !recBox) return;
+    favs=favs.filter(function(id){ return document.getElementById(id); });
+    recent=recent.filter(function(id){ return document.getElementById(id); });
+    favBox.innerHTML=''; recBox.innerHTML='';
+    favs.forEach(function(id){ favBox.appendChild(makeChip(toolName(id),id,true)); });
+    recent.slice(0,6).forEach(function(id){ if(!favs.includes(id)) recBox.appendChild(makeChip(toolName(id),id,false)); });
+    wrap.hidden = !favs.length && !recent.length;
+  }
+
+  // registra uso recente sempre que um resultado e exibido
+  const origShow=window.show;
+  if(typeof origShow==='function'){
+    window.show=function(el){
+      origShow(el);
+      try{
+        const resEl=document.getElementById(el);
+        const tool=resEl ? resEl.closest('.tool') : null;
+        if(tool && tool.id){
+          recent=[tool.id].concat(recent.filter(function(x){ return x!==tool.id; })).slice(0,8);
+          saveArr(REC_KEY,recent);
+          renderChips();
+        }
+      }catch(e){}
+    };
+  }
+  renderChips();
+})();
+
+/* ---------- Atalhos de teclado (/ , Esc , 1-7) ---------- */
+(function initShortcuts(){
+  const TAB_ORDER=['aquisicao','lancamento','financeiro','vendas','suporte','operacao','conteudo'];
+  document.addEventListener('keydown', function(e){
+    const tag=(e.target && e.target.tagName || '').toLowerCase();
+    const typing = tag==='input' || tag==='textarea' || tag==='select' || (e.target && e.target.isContentEditable);
+    if(e.key==='Escape'){
+      if(typing && e.target.blur){ e.target.blur(); return; }
+      const s=document.getElementById('toolsSearch');
+      if(s && s.value){ s.value=''; s.dispatchEvent(new Event('input')); }
+      return;
+    }
+    if(typing || e.ctrlKey || e.metaKey || e.altKey) return;
+    if(e.key==='/'){
+      const s=document.getElementById('toolsSearch');
+      if(s){ e.preventDefault(); s.focus(); }
+    } else if(/^[1-7]$/.test(e.key)){
+      activateTab(TAB_ORDER[parseInt(e.key,10)-1], true);
+    }
+  });
+})();
+
+/* ---------- Tooltips "Como este calculo funciona" ---------- */
+(function initFormulas(){
+  const FORMULAS={};
+  FORMULAS['CAC & LTV']='CAC = Gasto com aquisi\u00e7\u00e3o \u00f7 Clientes adquiridos. LTV = Ticket \u00d7 Frequ\u00eancia \u00d7 (Reten\u00e7\u00e3o \u00f7 12) \u00d7 Margem. Rela\u00e7\u00e3o saud\u00e1vel: LTV:CAC \u2265 3:1. Payback = CAC \u00f7 lucro mensal por cliente.';
+  FORMULAS['Projetor de Escala']='Clientes/semana = Or\u00e7amento \u00f7 CAC. O or\u00e7amento cresce % a cada semana. Receita = clientes \u00d7 ticket; Lucro = receita \u00d7 margem.';
+  FORMULAS['Auditor de Funil']='Cada etapa multiplica o volume pela taxa informada. O gargalo destacado \u00e9 a etapa com a MENOR taxa de convers\u00e3o.';
+  FORMULAS['ROI de Tr\u00e1fego Pago / ROAS']='ROAS = Receita \u00f7 Investimento. ROI (%) = (Receita \u2212 Investimento) \u00f7 Investimento \u00d7 100. Lucro = Receita \u2212 Investimento.';
+  FORMULAS['Ponto de Equil\u00edbrio de Campanha']='Margem de contribui\u00e7\u00e3o = Ticket \u2212 Custo vari\u00e1vel. Vendas p/ equil\u00edbrio = Custo fixo \u00f7 margem. Break-even ROAS = Ticket \u00f7 margem.';
+  FORMULAS['Conversor de M\u00e9tricas de M\u00eddia']='CPM = Custo \u00f7 impress\u00f5es \u00d7 1000. CPC = Custo \u00f7 cliques. CTR = cliques \u00f7 impress\u00f5es \u00d7 100. CPA = Custo \u00f7 convers\u00f5es. CPL = Custo \u00f7 leads.';
+  FORMULAS['Planejador de Or\u00e7amento por Canal']='Cada canal recebe Total \u00d7 (participa\u00e7\u00e3o \u00f7 soma das participa\u00e7\u00f5es). Se a soma n\u00e3o der 100%, os valores s\u00e3o normalizados proporcionalmente.';
+  FORMULAS['UTM Builder']='Concatena a URL base com utm_source, utm_medium, utm_campaign, utm_term e utm_content, codificados para URL (? ou &, conforme o caso).';
+  FORMULAS['Auditor de Landing Page (CRO)']='Score = itens marcados \u00f7 total de itens \u00d7 100. Acima de 80 = p\u00e1gina pronta para converter; abaixo de 50 = revis\u00e3o urgente.';
+  FORMULAS['CPL Ideal (baseado no LTV)']='CAC m\u00e1ximo = Ticket \u00d7 Margem. CPL ideal = CAC m\u00e1ximo \u00d7 convers\u00e3o lead\u2192venda.';
+  FORMULAS['Simulador A/B de Criativos']='Cliques = impress\u00f5es \u00d7 CTR de cada varia\u00e7\u00e3o. Vence a varia\u00e7\u00e3o com maior CTR; a diferen\u00e7a de cliques \u00e9 estimada sobre o volume informado.';
+  FORMULAS['Recupera\u00e7\u00e3o de Carrinho']='Receita recuperada = abandonos \u00d7 ticket \u00d7 taxa. Ganho l\u00edquido = recuperada \u2212 custo da automa\u00e7\u00e3o. ROI = ganho \u00f7 custo \u00d7 100.';
+  FORMULAS['Cronograma de Lan\u00e7amento']='Soma dias corridos fase a fase a partir da data inicial: pr\u00e9-lan\u00e7amento \u2192 abertura \u2192 pico \u2192 fechamento.';
+  FORMULAS['Simulador de Receita de Lan\u00e7amento']='Vendas = leads \u00d7 convers\u00e3o. Receita = vendas \u00d7 pre\u00e7o. Pessimista usa 70% dos leads; otimista, 130%.';
+  FORMULAS['Calculadora de Oferta']='Pre\u00e7o promo = original \u00d7 (1 \u2212 desconto). Parcela = promo \u00d7 (1+juros)^n \u00f7 n. Total = parcela \u00d7 n (juros compostos).';
+  FORMULAS['Cronograma Invertido']='Conta as datas para tr\u00e1s a partir do fechamento, descontando os dias de cada fase na ordem inversa.';
+  FORMULAS['Custo por Inscrito (CPE)']='CPE = Investimento \u00f7 Inscritos na lista.';
+  FORMULAS['Sequ\u00eancia de E-mails de Lan\u00e7amento']='Estrutura cl\u00e1ssica de 5 e-mails: aquecimento, hist\u00f3ria, abertura, pico (prova social) e fechamento com urg\u00eancia.';
+  FORMULAS['Calculadora de Precifica\u00e7\u00e3o']='Pre\u00e7o = (Custo + Fixos rateados) \u00f7 (1 \u2212 margem% \u2212 impostos%). Lucro/un = pre\u00e7o \u2212 custos.';
+  FORMULAS['Margem de Lucro']='Margem (%) = (Pre\u00e7o \u2212 Custo) \u00f7 Pre\u00e7o \u00d7 100. Lucro = pre\u00e7o \u2212 custo.';
+  FORMULAS['Fluxo de Caixa Projetado']='Saldo do m\u00eas = saldo anterior + entradas \u2212 sa\u00eddas, acumulado m\u00eas a m\u00eas. Linhas destacadas em vermelho = caixa negativo.';
+  FORMULAS['Capital de Giro Necess\u00e1rio']='Ciclo = estoque + recebimento \u2212 pagamento (dias). Capital de giro = custo operacional di\u00e1rio \u00d7 ciclo.';
+  FORMULAS['Ponto de Equil\u00edbrio Financeiro']='Margem de contribui\u00e7\u00e3o = pre\u00e7o \u2212 custo vari\u00e1vel. Clientes p/ equil\u00edbrio = custo fixo \u00f7 margem.';
+  FORMULAS['Juros Compostos / Patrim\u00f4nio']='Acumulado do m\u00eas = saldo anterior \u00d7 (1+taxa) + aporte. Rendimento = acumulado \u2212 total aportado.';
+  FORMULAS['Pr\u00f3-labore vs Distribui\u00e7\u00e3o de Lucros']='Pr\u00f3-labore = lucro \u00d7 % escolhida. Distribui\u00e7\u00e3o = lucro \u00d7 (1 \u2212 %).';
+  FORMULAS['MRR / ARR de Assinaturas']='MRR = assinantes \u00d7 mensalidade. A cada m\u00eas: assinantes = assinantes \u00d7 (1\u2212churn) + novos. ARR = MRR projetado \u00d7 12.';
+  FORMULAS['Metas de Vendas']='Vendas/m\u00eas = meta \u00f7 ticket. Visitas/dia = (vendas \u00f7 convers\u00e3o) \u00f7 dias \u00fateis.';
+  FORMULAS['Simulador de Desconto']='Pre\u00e7o c/ desconto = original \u00d7 (1\u2212desc). Lucro total = (pre\u00e7o final \u2212 custo) \u00d7 volume. Desconto m\u00e1x. = (pre\u00e7o \u2212 custo) \u00f7 pre\u00e7o \u00d7 100.';
+  FORMULAS['Ticket M\u00e9dio Necess\u00e1rio']='Ticket = meta \u00f7 n\u00famero de transa\u00e7\u00f5es/clientes.';
+  FORMULAS['Funil de Vendas Simples']='Convers\u00e3o entre etapas: Lead\u2192Proposta e Proposta\u2192Venda em %. Convers\u00e3o geral = fechamentos \u00f7 leads \u00d7 100.';
+  FORMULAS['Planner de Follow-up']='Respostas = leads \u00d7 (1 \u2212 (1\u2212taxa)^tentativas). "+ tentativas" mostra o ganho vs uma \u00fanica tentativa.';
+  FORMULAS['Churn & Reten\u00e7\u00e3o']='Churn (%) = perdidos \u00f7 in\u00edcio do m\u00eas \u00d7 100. Lifetime = 100 \u00f7 churn. LTV ajustado = ticket \u00d7 margem \u00d7 lifetime. Churn \u2264 5%/m\u00eas \u00e9 saud\u00e1vel.';
+  FORMULAS['\u00cdndice de Reclama\u00e7\u00f5es / NPS']='NPS = % promotores \u2212 % detratores. \u00cdndice = reclama\u00e7\u00f5es \u00f7 clientes \u00d7 100. Recl./1000 = reclama\u00e7\u00f5es \u00f7 clientes \u00d7 1000.';
+  FORMULAS['Calculadora de Tempo de Resposta (SLA)']='Capacidade/dia = atendentes \u00d7 horas \u00d7 60 \u00f7 tempo m\u00e9dio por resposta. Backlog = volume \u2212 capacidade.';
+  FORMULAS['Calculadora de Valor Recuperado']='Valor salvo = clientes em risco \u00d7 ticket \u00d7 taxa de reten\u00e7\u00e3o.';
+  FORMULAS['Checklist de Auditagem Semanal (ritual M3)']='Score = itens executados \u00f7 8 \u00d7 100. Meta: \u2265 75 pontos toda semana.';
+  FORMULAS['Planejador de Metas (OKR)']='Progresso de cada KR = atual \u00f7 meta \u00d7 100. M\u00e9dia simples dos KRs = progresso do objetivo.';
+  FORMULAS['Matriz de Prioriza\u00e7\u00e3o (Pareto + Eisenhower)']='Ordena causas por impacto e acumula %. As causas at\u00e9 cruzar 80% s\u00e3o os "poucos vitais" (\u2605).';
+  FORMULAS['Hora Fatur\u00e1vel Ideal']='Pre\u00e7o/hora = (meta \u00f7 horas fatur\u00e1veis) \u00d7 (1 + margem).';
+  FORMULAS['Decompositor de Metas Anuais']='Mensal = meta anual \u00f7 meses. Semanal = mensal \u00f7 4,3.';
+  FORMULAS['ROI de Automa\u00e7\u00e3o']='Economia bruta = horas \u00d7 valor/hora. L\u00edquida = bruta \u2212 custo/m\u00eas. Payback = implanta\u00e7\u00e3o \u00f7 l\u00edquida. ROI 12m = (l\u00edquida\u00d712 \u2212 investimento ano) \u00f7 investimento ano \u00d7 100.';
+  FORMULAS['Calend\u00e1rio Editorial']='Total = posts/semana \u00d7 semanas. M\u00e9dia mensal = posts/semana \u00d7 4,33.';
+  FORMULAS['ROI de Conte\u00fado']='Receita = leads \u00d7 convers\u00e3o \u00d7 ticket. ROI = (receita \u2212 investimento) \u00f7 investimento \u00d7 100.';
+  FORMULAS['Checklist SEO On-page']='Score = itens marcados \u00f7 10 \u00d7 100. Acima de 80 = SEO on-page s\u00f3lido.';
+
+  function norm(t){ return t.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+  const map={};
+  Object.keys(FORMULAS).forEach(function(k){ map[norm(k)]=FORMULAS[k]; });
+
+  document.querySelectorAll('.tool').forEach(function(tool){
+    if(tool.querySelector('.tool-formula')) return;
+    const h3=tool.querySelector('h3');
+    if(!h3) return;
+    const text=map[norm(h3.textContent)];
+    if(!text) return;
+    const det=document.createElement('details');
+    det.className='tool-formula';
+    const sum=document.createElement('summary');
+    sum.textContent='Como este c\u00e1lculo funciona';
+    const body=document.createElement('div');
+    body.className='tool-formula-body';
+    body.textContent=text;
+    det.appendChild(sum); det.appendChild(body);
+    const res=tool.querySelector('.result');
+    const actions=tool.querySelector('.tool-actions');
+    if(res && res.parentNode) res.parentNode.insertBefore(det,res);
+    else if(actions && actions.parentNode) actions.parentNode.insertBefore(det,actions);
+    else tool.appendChild(det);
+  });
+})();
+
 function copyToolLink(toolId, btn){
   const panel = document.getElementById(toolId)?.closest('.tab-panel');
   const tab = panel ? panel.id : 'aquisicao';
@@ -391,7 +583,11 @@ function exportToolResult(toolId, btn){
     {ids:['rc_inv','rc_leads','rc_conv','rc_ticket'], fn:'calcROIConteudo'},
     {ids:['hf_meta','hf_horas','hf_marg'], fn:'calcHoraFat'},
     {ids:['ma_meta','ma_mes'], fn:'calcMetasAn'},
-    {ids:['cpe_inv','cpe_ins'], fn:'calcCPE'}
+    {ids:['cpe_inv','cpe_ins'], fn:'calcCPE'},
+    {ids:['rc2_aband','rc2_ticket','rc2_tx','rc2_custo'], fn:'calcCarrinho'},
+    {ids:['ch_ini','ch_perd','ch_ticket','ch_marg'], fn:'calcChurn'},
+    {ids:['as_subs','as_ticket','as_novos','as_churn','as_mes'], fn:'calcMRR'},
+    {ids:['au_horas','au_vhora','au_custo','au_impl'], fn:'calcAutomacao'}
   ];
   const debounceMap={};
   function debounce(fn, wait){ let t; return function(){ clearTimeout(t); t=setTimeout(fn, wait); }; }
@@ -962,6 +1158,17 @@ function simAB(){
   document.getElementById('ab_box').className='res '+(Math.abs(b-a)>0?'good':'');
   show('ab_res');
 }
+function calcCarrinho(){
+  const aband=numv('rc2_aband'), ticket=numv('rc2_ticket'), tx=numv('rc2_tx')/100, custo=numv('rc2_custo');
+  const rec=aband*ticket*tx;
+  const ganho=rec-custo;
+  const roi=custo?ganho/custo*100:0;
+  document.getElementById('rc2_rec').textContent=brl(rec);
+  document.getElementById('rc2_lucro').textContent=brl(ganho);
+  document.getElementById('rc2_roi').textContent=(roi>=0?'+':'')+pct(roi);
+  document.getElementById('rc2_box').className='res '+(ganho>0?'good':(ganho<0?'bad':''));
+  show('rc2_res');
+}
 
 /* ---- TAB 2 extras ---- */
 function calcCronInvertido(){
@@ -1025,6 +1232,22 @@ function calcProLabore(){
   document.getElementById('pl_dist').textContent=brl(lucro*(1-pl));
   show('pl_res');
 }
+function calcMRR(){
+  let subs=numv('as_subs');
+  const ticket=numv('as_ticket'), novos=numv('as_novos'), churn=Math.min(0.95, numv('as_churn')/100);
+  const meses=Math.max(1,Math.round(numv('as_mes')));
+  if(!subs){ alert('Informe o número de assinantes atuais.'); return; }
+  const mrr0=subs*ticket;
+  for(let i=0;i<meses;i++){ subs=subs*(1-churn)+novos; }
+  const mrrF=subs*ticket;
+  const cresc=mrr0?(mrrF-mrr0)/mrr0*100:0;
+  document.getElementById('as_mrr0').textContent=brl(mrr0);
+  document.getElementById('as_mrrf').textContent=brl(mrrF);
+  document.getElementById('as_arr').textContent=brl(mrrF*12);
+  document.getElementById('as_cresc').textContent=(cresc>=0?'+':'')+pct(cresc);
+  document.getElementById('as_box').className='res '+(cresc>0?'good':(cresc<0?'bad':''));
+  show('as_res');
+}
 
 /* ---- TAB 4 extras ---- */
 function gerarScript(){
@@ -1048,6 +1271,20 @@ function calcFollow(){
   document.getElementById('fu_resp').textContent=num(resp);
   document.getElementById('fu_extra').textContent='+'+num(resp-base);
   show('fu_res');
+}
+function calcChurn(){
+  const ini=numv('ch_ini'), perd=numv('ch_perd'), ticket=numv('ch_ticket'), marg=numv('ch_marg')/100;
+  if(!ini){ alert('Informe o número de clientes no início do mês.'); return; }
+  const churn=perd/ini*100;
+  const retencao=Math.max(0, 100-churn);
+  const lifetime=churn>0 ? 100/churn : Infinity;
+  const ltv=lifetime===Infinity ? Infinity : ticket*marg*lifetime;
+  document.getElementById('ch_tx').textContent=pct(churn);
+  document.getElementById('ch_ret').textContent=pct(retencao);
+  document.getElementById('ch_life').textContent=isFinite(lifetime)?num(lifetime):'∞';
+  document.getElementById('ch_ltv').textContent=isFinite(ltv)?brl(ltv):'∞';
+  document.getElementById('ch_box').className='res '+(churn<=5?'good':(churn>15?'bad':''));
+  show('ch_res');
 }
 
 /* ---- TAB 5 extras ---- */
@@ -1092,6 +1329,20 @@ function calcMetasAn(){
   document.getElementById('ma_mensal').textContent=brl(meta/mes);
   document.getElementById('ma_semanal').textContent=brl(meta/mes/4.3);
   show('ma_res');
+}
+function calcAutomacao(){
+  const horas=numv('au_horas'), vhora=numv('au_vhora'), custo=numv('au_custo'), impl=numv('au_impl');
+  const bruta=horas*vhora;
+  const liq=bruta-custo;
+  const payback=liq>0 ? impl/liq : Infinity;
+  const investAno=impl+custo*12;
+  const roi12=investAno>0 ? ((liq*12-investAno)/investAno*100) : 0;
+  document.getElementById('au_bruta').textContent=brl(bruta);
+  document.getElementById('au_liq').textContent=brl(liq);
+  document.getElementById('au_payback').textContent=isFinite(payback)?num(payback):'–';
+  document.getElementById('au_roi').textContent=(roi12>=0?'+':'')+pct(roi12);
+  document.getElementById('au_box').className='res '+(liq>0?'good':(liq<0?'bad':''));
+  show('au_res');
 }
 
 /* ---- TAB 7 ---- */
@@ -1143,86 +1394,12 @@ document.addEventListener('DOMContentLoaded', function() {
   let isTabActive = true;
   document.addEventListener('visibilitychange', () => { isTabActive = !document.hidden; });
 
-   /* ---- GALÁXIA ANIMADA ---- */
-  (function initGalaxy() {
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const canvas = document.getElementById('particle-canvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    let dpr = window.devicePixelRatio || 1, width = 0, height = 0;
-    let stars = [], nebulas = [], shootingStars = [], time = 0, nextShootingStar = 400, animId = null;
-    const galaxyCenter = { x: 0.72, y: 0.30 };
-    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
-    const palette = ['#E6E8EE', '#9AA3B8', '#C5A46A'];
-    function rand(a, b) { return a + Math.random() * (b - a); }
-    function createStars() {
-      stars = [];
-      const cx = width * galaxyCenter.x, cy = height * galaxyCenter.y;
-      const bgCount = Math.round((width * height) / 8500);
-      for (let i = 0; i < bgCount; i++) stars.push({ x: Math.random()*width, y: Math.random()*height, size: rand(0.3,1.4), twinkle: rand(0.4,2.0), phase: rand(0,Math.PI*2), color: palette[(Math.random()*palette.length)|0], galaxy: false });
-      const spiralCount = Math.round((width * height) / 15000), arms = 2, maxR = Math.min(width, height) * 0.42;
-      for (let i = 0; i < spiralCount; i++) {
-        const arm = i % arms, angle = arm * Math.PI + i * 0.22, radius = Math.pow(Math.random(), 0.6) * maxR, a = angle + radius * 0.006, spread = rand(0.4, 1.6) * maxR * 0.06, r = radius + (Math.random()-0.5)*spread;
-        stars.push({ x: cx + Math.cos(a)*r, y: cy + Math.sin(a)*r*0.62, size: rand(0.5,2.1), twinkle: rand(0.3,1.6), phase: rand(0,Math.PI*2), color: palette[(Math.random()*palette.length)|0], galaxy: true, arm });
-      }
-    }
-    function createNebulas() {
-      nebulas = [];
-      const defs = [{color:'59, 91, 254',alpha:0.05},{color:'197, 164, 106',alpha:0.03},{color:'59, 91, 254',alpha:0.04}];
-      for (let i = 0; i < 6; i++) { const d = defs[i % defs.length]; nebulas.push({ x: rand(0,width), y: rand(0,height), radius: rand(Math.min(width,height)*0.28, Math.min(width,height)*0.55), color: d.color, alpha: d.alpha, pulse: rand(0.10,0.30), phase: rand(0,Math.PI*2) }); }
-    }
-    function drawNebulas() {
-      ctx.globalCompositeOperation = 'lighter';
-      for (const n of nebulas) {
-        const pulse = 0.72 + 0.28 * Math.sin(time * n.pulse * 0.02 + n.phase);
-        const g = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
-        g.addColorStop(0, `rgba(${n.color}, ${(n.alpha*pulse).toFixed(3)})`); g.addColorStop(1, `rgba(${n.color}, 0)`);
-        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(n.x, n.y, n.radius, 0, Math.PI*2); ctx.fill();
-      }
-      ctx.globalCompositeOperation = 'source-over';
-    }
-    function drawStars() {
-      const cx = width*galaxyCenter.x, cy = height*galaxyCenter.y, offX = mouse.x*0.35, offY = mouse.y*0.35, rot = time*0.00011, cos = Math.cos(rot), sin = Math.sin(rot);
-      for (const s of stars) {
-        const tw = 0.55 + 0.45 * Math.sin(time*0.03*s.twinkle + s.phase);
-        let x = s.x, y = s.y;
-        if (s.galaxy) { const dx = s.x-cx, dy = s.y-cy; x = cx + dx*cos - dy*sin; y = cy + dx*sin + dy*cos; }
-        ctx.globalAlpha = Math.min(1, tw*0.85 + 0.15); ctx.fillStyle = s.color;
-        ctx.beginPath(); ctx.arc(x + offX, y + offY, s.size, 0, Math.PI*2); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-    }
-    function spawn() { const sx=rand(0,width), sy=rand(0,height), dir=Math.random()*Math.PI*2, spd=rand(5,9); shootingStars.push({ x:sx, y:sy, vx:Math.cos(dir)*spd, vy:Math.sin(dir)*spd, life:1, decay:rand(0.008,0.016), length:rand(60,130) }); }
-    function drawShooting() {
-      for (let i = shootingStars.length-1; i >= 0; i--) {
-        const s = shootingStars[i]; s.x += s.vx; s.y += s.vy; s.life -= s.decay;
-        if (s.life <= 0) { shootingStars.splice(i,1); continue; }
-        const g = ctx.createLinearGradient(s.x, s.y, s.x - s.vx*5, s.y - s.vy*5);
-        g.addColorStop(0, `rgba(255,255,255, ${(s.life*0.9).toFixed(3)})`); g.addColorStop(1, 'rgba(255,255,255,0)');
-        ctx.strokeStyle = g; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(s.x - s.vx*5, s.y - s.vy*5); ctx.stroke();
-      }
-    }
-    function resize() { dpr = window.devicePixelRatio || 1; width = window.innerWidth; height = window.innerHeight; canvas.width = width*dpr; canvas.height = height*dpr; canvas.style.width = width+'px'; canvas.style.height = height+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); createStars(); createNebulas(); }
-    function animate() {
-      if (isTabActive) {
-        time += 1; mouse.x += (mouse.tx - mouse.x)*0.05; mouse.y += (mouse.ty - mouse.y)*0.05;
-        if (time > nextShootingStar) { spawn(); nextShootingStar = time + rand(260,640); }
-        ctx.clearRect(0,0,width,height); drawNebulas(); drawShooting(); drawStars();
-      }
-      animId = requestAnimationFrame(animate);
-    }
-    window.addEventListener('resize', resize);
-    if (!isTouch) document.addEventListener('mousemove', e => { mouse.tx = (e.clientX/window.innerWidth - 0.5)*60; mouse.ty = (e.clientY/window.innerHeight - 0.5)*60; });
-    resize(); animate();
-  })();
-
-  /* ---- NAVBAR ---- */
+  /* ---- NAVBAR (sempre visível) ---- */
   (function initNavbar() {
     const navbar = document.getElementById('navbar'); if (!navbar) return;
     function handle() {
       const cur = window.pageYOffset;
       if (cur > 30) navbar.classList.add('scrolled'); else navbar.classList.remove('scrolled');
-      // mantém navbar sempre visível e fixa no topo (sem esconder no scroll)
       navbar.classList.remove('hidden');
       navbar.classList.add('visible');
     }
@@ -1240,6 +1417,35 @@ document.addEventListener('DOMContentLoaded', function() {
     }));
   })();
 
+  /* ---- GOLD SCROLL — pedra -> ouro ---- */
+  (function initGold() {
+    const root = document.documentElement;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { root.style.setProperty('--gold', '1'); return; }
+    let ticking = false;
+    function upd() {
+      const vh = window.innerHeight || 1;
+      const y = window.pageYOffset;
+      let p = (y - vh * 0.45) / (vh * 1.9);
+      p = Math.min(Math.max(p, 0), 1);
+      const e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      root.style.setProperty('--gold', e.toFixed(4));
+      ticking = false;
+    }
+    window.addEventListener('scroll', () => { if (!ticking) { requestAnimationFrame(upd); ticking = true; } }, { passive: true });
+    window.addEventListener('resize', upd, { passive: true });
+    upd();
+  })();
+
+  /* ---- HERO PARALLAX sutil ---- */
+  (function initParallax() {
+    const vis = document.querySelector('.hero-visual');
+    if (!vis || isTouch) return;
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) { requestAnimationFrame(() => { if (!isTabActive) return; const s = window.pageYOffset; vis.style.transform = `translateY(${s * 0.06}px)`; ticking = false; }); ticking = true; }
+    }, { passive: true });
+  })();
+
   /* ---- SCROLL REVEAL ---- */
   (function initReveal() {
     const els = document.querySelectorAll('.panel-head, .tool');
@@ -1255,27 +1461,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
     els.forEach(el => { el.classList.add('reveal'); obs.observe(el); });
   })();
-
-  /* ---- MAGNETIC BUTTONS ---- */
-  (function initMagnetic() {
-    if (isTouch) return;
-    document.querySelectorAll('.btn, .nav-cta').forEach(btn => {
-      btn.addEventListener('mousemove', e => { const r = btn.getBoundingClientRect(); btn.style.transform = `translate(${(e.clientX - r.left - r.width/2) * 0.15}px, ${(e.clientY - r.top - r.height/2) * 0.15}px)`; });
-      btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; btn.style.transition = 'transform 0.5s cubic-bezier(0.22,1,0.36,1), background 0.3s, box-shadow 0.3s'; });
-      btn.addEventListener('mouseenter', () => { btn.style.transition = 'transform 0.1s ease, background 0.3s, box-shadow 0.3s'; });
-    });
-  })();
-
-  /* ---- CURSOR GLOW ---- */
-  (function initGlow() {
-    if (isTouch) return;
-    const g = document.createElement('div'); g.className = 'cursor-glow'; document.body.appendChild(g);
-    let gx = 0, gy = 0, cgx = 0, cgy = 0, inWin = false;
-    document.addEventListener('mousemove', e => { gx = e.clientX; gy = e.clientY; inWin = true; g.style.opacity = '1'; });
-    document.addEventListener('mouseleave', () => { inWin = false; g.style.opacity = '0'; });
-    document.addEventListener('mouseenter', () => { inWin = true; });
-    (function loop() { if (isTabActive && inWin) { cgx += (gx - cgx)*0.08; cgy += (gy - cgy)*0.08; g.style.left = cgx+'px'; g.style.top = cgy+'px'; } requestAnimationFrame(loop); })();
-  })();
+  // GALÁXIA removida — identidade unificada à plataforma (pedra -> ouro)
+  // MAGNETIC BUTTONS removido - botões fixos
+  // CURSOR GLOW removido
 });
 
 /* =========================================================
@@ -1356,3 +1544,12 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   renderCartao(); renderPost(); renderCupom();
 })();
+
+/* =========================================================
+   PWA — registro do Service Worker (offline)
+   ========================================================= */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}

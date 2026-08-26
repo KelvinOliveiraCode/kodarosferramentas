@@ -7,7 +7,7 @@
 <meta name="description" content="Ferramentas gratuitas da KODAROS: calculadoras de aquisição, lançamento, financeiro, vendas, suporte e gestão. 100% client-side, sem IA.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <meta property="og:title" content="Ferramentas KODAROS">
 <meta property="og:description" content="Calculadoras e geradores gratuitos, citáveis nos e-books KODAROS.">
 <meta property="og:image" content="https://kelvinoliveiracode.github.io/kodarosferramentas/kodaros_logo.png">
@@ -18,8 +18,11 @@
 <meta name="twitter:description" content="Calculadoras e geradores gratuitos, citáveis nos e-books KODAROS.">
 <meta name="twitter:image" content="https://kelvinoliveiracode.github.io/kodarosferramentas/kodaros_logo.png">
 <link rel="canonical" href="https://kelvinoliveiracode.github.io/kodarosferramentas/">
-<meta name="theme-color" content="#0A0A0A">
+<meta name="theme-color" content="#070709">
 <link rel="icon" href="kodaros_icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="kodaros_icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">
 {
@@ -37,7 +40,7 @@
 </head>
 <body>
 <a href="#aquisicao" class="skip-link">Pular para o conteúdo</a>
-<canvas id="particle-canvas" aria-hidden="true" role="presentation"></canvas>
+<div class="temple-frame" aria-hidden="true"><span class="temple-corner tl"></span><span class="temple-corner tr"></span><span class="temple-corner bl"></span><span class="temple-corner br"></span></div>
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
@@ -51,6 +54,7 @@
     </a>
   </div>
 </nav>
+<div class="page-wrap">
 
 <!-- HERO -->
 <section class="hero" id="inicio">
@@ -101,8 +105,15 @@
 </nav>
 
 <div class="tools-search-wrap">
-  <input id="toolsSearch" class="tools-search" type="search" placeholder="Buscar ferramenta... (ex: CAC, ROI, UTM, SEO)" aria-label="Buscar ferramenta">
+  <input id="toolsSearch" class="tools-search" type="search" placeholder="Buscar ferramenta... (ex: CAC, ROI, UTM, SEO) — aperte / para focar" aria-label="Buscar ferramenta">
   <span class="tools-search-meta" id="searchMeta" aria-live="polite"></span>
+</div>
+
+<div class="fav-bar-wrap" id="favBarWrap" hidden>
+  <span class="fav-bar-label">⭐ Favoritas</span>
+  <div class="fav-bar" id="favBarFavs" aria-label="Ferramentas favoritadas"></div>
+  <span class="fav-bar-label">🕒 Recentes</span>
+  <div class="fav-bar" id="favBarRecent" aria-label="Ferramentas usadas recentemente"></div>
 </div>
 
 <main class="container">
@@ -362,6 +373,27 @@
           <div class="res-grid">
             <div class="res" id="ab_box"><span class="v" id="ab_win">–</span><span class="l">Vencedora</span></div>
             <div class="res"><span class="v" id="ab_cli">–</span><span class="l">Cliques a mais</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 13. Recuperação de Carrinho -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">13</span>
+          <div><h3>Recuperação de Carrinho</h3><span class="tool-ebook">Tráfego Que Vende</span></div></div>
+        <p class="tool-desc">Quanto dá para recuperar dos carrinhos abandonados com e-mails/retargeting.</p>
+        <div class="field row">
+          <div class="field"><label>Carrinhos abandonados/mês</label><input id="rc2_aband" type="number" value="300"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="rc2_ticket" type="number" value="180"></div>
+          <div class="field"><label>Taxa de recuperação (%)</label><input id="rc2_tx" type="number" value="8"></div>
+          <div class="field"><label>Custo da automação (R$/mês)</label><input id="rc2_custo" type="number" value="200"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcCarrinho()">Calcular</button>
+        <div class="result" id="rc2_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="rc2_rec">–</span><span class="l">Receita recuperada (R$)</span></div>
+            <div class="res good"><span class="v" id="rc2_lucro">–</span><span class="l">Ganho líquido (R$)</span></div>
+            <div class="res" id="rc2_box"><span class="v" id="rc2_roi">–</span><span class="l">ROI (%)</span></div>
           </div>
         </div>
       </article>
@@ -628,6 +660,29 @@
         </div>
       </article>
 
+      <!-- 8. MRR / ARR de Assinaturas -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">8</span>
+          <div><h3>MRR / ARR de Assinaturas</h3><span class="tool-ebook">10 Pilares do Controle Financeiro</span></div></div>
+        <p class="tool-desc">Projeta receita recorrente com novos assinantes e churn mensal.</p>
+        <div class="field row">
+          <div class="field"><label>Assinantes atuais</label><input id="as_subs" type="number" value="100"></div>
+          <div class="field"><label>Mensalidade (R$)</label><input id="as_ticket" type="number" value="97"></div>
+          <div class="field"><label>Novos assinantes/mês</label><input id="as_novos" type="number" value="20"></div>
+          <div class="field"><label>Churn mensal (%)</label><input id="as_churn" type="number" value="5"></div>
+          <div class="field"><label>Meses de projeção</label><input id="as_mes" type="number" value="12"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcMRR()">Projetar MRR</button>
+        <div class="result" id="as_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="as_mrr0">–</span><span class="l">MRR atual (R$)</span></div>
+            <div class="res good"><span class="v" id="as_mrrf">–</span><span class="l">MRR projetado (R$)</span></div>
+            <div class="res"><span class="v" id="as_arr">–</span><span class="l">ARR projetado (R$)</span></div>
+            <div class="res" id="as_box"><span class="v" id="as_cresc">–</span><span class="l">Crescimento (%)</span></div>
+          </div>
+        </div>
+      </article>
+
     </div>
   </section>
 
@@ -753,6 +808,28 @@
           <div class="res-grid">
             <div class="res good"><span class="v" id="fu_resp">–</span><span class="l">Respostas estimadas</span></div>
             <div class="res"><span class="v" id="fu_extra">–</span><span class="l">+ tentativas</span></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 7. Churn & Retenção -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">7</span>
+          <div><h3>Churn &amp; Retenção</h3><span class="tool-ebook">Venda Mais Hoje</span></div></div>
+        <p class="tool-desc">Quanto de clientes você perde por mês e quanto isso encurta o LTV.</p>
+        <div class="field row">
+          <div class="field"><label>Clientes no início do mês</label><input id="ch_ini" type="number" value="400"></div>
+          <div class="field"><label>Clientes perdidos no mês</label><input id="ch_perd" type="number" value="20"></div>
+          <div class="field"><label>Ticket médio (R$)</label><input id="ch_ticket" type="number" value="250"></div>
+          <div class="field"><label>Margem líquida (%)</label><input id="ch_marg" type="number" value="35"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcChurn()">Calcular churn</button>
+        <div class="result" id="ch_res">
+          <div class="res-grid">
+            <div class="res" id="ch_box"><span class="v" id="ch_tx">–</span><span class="l">Churn mensal (%)</span></div>
+            <div class="res"><span class="v" id="ch_ret">–</span><span class="l">Retenção (%)</span></div>
+            <div class="res"><span class="v" id="ch_life">–</span><span class="l">Lifetime (meses)</span></div>
+            <div class="res good"><span class="v" id="ch_ltv">–</span><span class="l">LTV ajustado (R$)</span></div>
           </div>
         </div>
       </article>
@@ -1005,6 +1082,28 @@
         </div>
       </article>
 
+      <!-- 7. ROI de Automação -->
+      <article class="tool">
+        <div class="tool-head"><span class="tool-num">7</span>
+          <div><h3>ROI de Automação</h3><span class="tool-ebook">10 Pilares da Gestão Empresarial</span></div></div>
+        <p class="tool-desc">Vale a pena automatizar? Compare horas economizadas com o custo.</p>
+        <div class="field row">
+          <div class="field"><label>Horas economizadas/mês</label><input id="au_horas" type="number" value="20"></div>
+          <div class="field"><label>Valor da hora (R$)</label><input id="au_vhora" type="number" value="80"></div>
+          <div class="field"><label>Custo da ferramenta (R$/mês)</label><input id="au_custo" type="number" value="150"></div>
+          <div class="field"><label>Custo de implantação (R$)</label><input id="au_impl" type="number" value="1000"></div>
+        </div>
+        <button class="btn btn-primary" onclick="calcAutomacao()">Calcular</button>
+        <div class="result" id="au_res">
+          <div class="res-grid">
+            <div class="res"><span class="v" id="au_bruta">–</span><span class="l">Economia bruta/mês (R$)</span></div>
+            <div class="res good"><span class="v" id="au_liq">–</span><span class="l">Economia líquida/mês (R$)</span></div>
+            <div class="res" id="au_box"><span class="v" id="au_payback">–</span><span class="l">Payback (meses)</span></div>
+            <div class="res"><span class="v" id="au_roi">–</span><span class="l">ROI 12 meses (%)</span></div>
+          </div>
+        </div>
+      </article>
+
     </div>
   </section>
 
@@ -1131,6 +1230,7 @@
     <p style="margin-top:10px; font-size:0.78rem; color:var(--color-text-dim)">Sem coleta de dados pessoais. Métricas anônimas em localStorage (<code>kodaros_events</code>). <a href="#" onclick="localStorage.clear(); alert('Dados locais limpos.'); return false;">Limpar dados locais</a></p>
   </div>
 </footer>
+</div>
 
 <script src="script.js"></script>
 <!-- Analytics leve (descomente e troque o domínio quando ativar Plausible/Umami) -->
