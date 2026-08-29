@@ -442,3 +442,11 @@ tr.total td{font-weight:700;color:var(--ink-primary);border-top:2px solid rgba(2
   .scroll-indicator{display:none}
   .reveal{opacity:1;transform:none}
 }
+
+/* ---------- ORÇAMENTO BANNER (topo) ---------- */
+.orcamento-banner{margin-top:64px;background:linear-gradient(180deg,rgba(212,175,106,0.09),rgba(237,233,225,0.025));border-bottom:1px solid var(--hairline);border-top:1px solid var(--hairline);padding:18px 0;position:relative;z-index:1}
+.orcamento-banner-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.orcamento-banner-text{font-family:'Figtree',sans-serif;font-size:.92rem;line-height:1.55;color:var(--ink-primary);max-width:760px;margin:0}
+.orcamento-banner-cta{flex-shrink:0;white-space:nowrap}
+.orcamento-banner + .hero{padding-top:48px}
+@media(max-width:768px){.orcamento-banner{margin-top:58px}.orcamento-banner-inner{flex-direction:column;text-align:center}.orcamento-banner-text{max-width:none}.orcamento-banner + .hero{padding-top:36px}}
