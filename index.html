@@ -34,21 +34,26 @@
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "All",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" },
-  "publisher": { "@type": "Organization", "name": "KODAROS", "url": "https://kelvinoliveiracode.github.io/plataforma-kodaros/" }
+  "publisher": { "@type": "Organization", "name": "KODAROS", "url": "https://kelvinoliveiracode.github.io/KodarosLanding/" }
 }
 </script>
 </head>
 <body>
 <a href="#aquisicao" class="skip-link">Pular para o conteúdo</a>
 
+<canvas id="particles" aria-hidden="true"></canvas>
+<canvas id="particles-canvas" aria-hidden="true"></canvas>
+
 
 <!-- NAVBAR -->
 <nav class="navbar" id="navbar">
   <div class="nav-container">
-    <a href="#inicio" class="nav-logo">
-      <img src="kodaros_logo.png" alt="KODAROS">
+    <a href="#inicio" class="nav-logo" aria-label="KODAROS">
+      <span class="nav-logo-text">KODAROS</span>
+      <img src="bust.png" alt="KODAROS" class="nav-bust" height="40">
     </a>
-    <a href="https://kelvinoliveiracode.github.io/plataforma-kodaros/" target="_blank" rel="noopener" class="nav-cta">
+    <span class="nav-ed">FERRAMENTAS</span>
+    <a href="https://kelvinoliveiracode.github.io/KodarosLanding/" target="_blank" rel="noopener" class="nav-cta">
       <span>Plataforma KODAROS</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
     </a>
@@ -60,36 +65,44 @@
 <section class="hero" id="inicio">
   <div class="hero-container">
     <div class="hero-content">
-      <span class="hero-label" data-text="Gratuito • Sem IA • Client-side">Gratuito • Sem IA • Client-side</span>
-      <h1 class="hero-title">
-        <span class="word-reveal">Ferramentas</span>
-        <span class="word-reveal">que</span>
-        <span class="word-reveal">fazem</span>
-        <span class="word-reveal">seu</span>
-        <span class="word-reveal">negócio</span>
-        <span class="word-reveal text-gradient">crescer.</span>
-      </h1>
-      <p class="hero-subtitle">Calculadoras e geradores determinísticos, citáveis nos e-books da KODAROS. Tudo roda no seu navegador — use quantas vezes quiser, sem custo.</p>
-      <div class="hero-buttons">
+      <span class="hero-over">Gratuito · Sem IA · 100% no navegador</span>
+      <h1 class="hero-title">Ferramentas de <span class="gold">gestão e aquisição</span>, direto ao número.</h1>
+      <p class="hero-sub">Calculadoras e geradores <strong>determinísticos</strong>, citáveis nos e-books da KODAROS. Tudo roda no seu navegador — sem cadastro, sem custo, sem enviar dados.</p>
+      <div class="hero-ctas">
         <a href="#aquisicao" class="btn btn-primary">
           <span>Explorar ferramentas</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a href="https://kelvinoliveiracode.github.io/plataforma-kodaros/" target="_blank" rel="noopener" class="btn btn-ghost">
+        <a href="https://kelvinoliveiracode.github.io/KodarosLanding/" target="_blank" rel="noopener" class="btn btn-ghost">
           <span>Ver e-books</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
         </a>
       </div>
-      <div class="hero-orcamento" role="note" aria-label="Orçamento de ferramenta exclusiva">
-        <p>Quer Uma Ferramenta Específica e Exclusiva Para Sua Empresa? Entre em Contato Conosco e Faça Seu Orçamento Com Nossa Equipe!</p>
-        <a class="btn btn-primary" href="mailto:kodaros01@gmail.com?subject=Or%C3%A7amento%20%E2%80%94%20Ferramenta%20Exclusiva%20KODAROS&amp;body=Ol%C3%A1%2C%20equipe%20KODAROS!%0A%0AQuero%20um%20or%C3%A7amento%20para%20uma%20ferramenta%20exclusiva%20para%20minha%20empresa.%0A%0ADescreva%20aqui%20sua%20ideia%2Fnecessidade%3A%0A%0A---%0AEnviado%20pelas%20Ferramentas%20KODAROS">Solicitar orçamento</a>
+      <div class="hero-ledger">
+        <div><span>Acesso</span><b>Sem cadastro, direto no navegador</b></div>
+        <div><span>Referência</span><b>Cada ferramenta cita o e-book de origem</b></div>
+        <div><span>Privacidade</span><b>Nada sai do seu dispositivo</b></div>
+        <div><span>Exportação</span><b>Resultado em PNG com 1 clique</b></div>
       </div>
     </div>
-      <div class="hero-visual">
-       <div class="hero-icon-svg">
-         <img src="kodaros_icon.png" alt="Ícone KODAROS — ferramentas gratuitas de aquisição, financeiro, vendas e gestão" class="hero-icon-img" width="400" height="400" loading="eager">
-       </div>
-     </div>
+    <aside class="ficha" aria-label="Ficha das ferramentas">
+      <div class="ficha-head"><span>FICHA</span><span>KODAROS</span></div>
+      <figure>
+        <img src="kodaros_icon.png" alt="Brasão KODAROS — ferramentas gratuitas de aquisição, financeiro, vendas e gestão" width="320" height="320" loading="eager">
+        <figcaption>Brasão KODAROS</figcaption>
+      </figure>
+      <div class="ficha-name">FERRAMENTAS</div>
+      <div class="ficha-rows">
+        <div><span>Ferramentas</span><b id="ficha-count">53</b></div>
+        <div><span>Categorias</span><b>7</b></div>
+        <div><span>Cadastro</span><b>Nenhum</b></div>
+        <div><span>Custo</span><b>R$ 0</b></div>
+      </div>
+      <div class="hero-orcamento" role="note" aria-label="Orçamento de ferramenta exclusiva">
+        <p><b>Ferramenta exclusiva?</b> Precisa de uma calculadora ou sistema feito para a sua empresa? Peça um orçamento, sem compromisso.</p>
+        <a class="btn btn-ghost" href="mailto:kodaros01@gmail.com?subject=Or%C3%A7amento%20%E2%80%94%20Ferramenta%20Exclusiva%20KODAROS&amp;body=Ol%C3%A1%2C%20equipe%20KODAROS!%0A%0AQuero%20um%20or%C3%A7amento%20para%20uma%20ferramenta%20exclusiva%20para%20minha%20empresa.%0A%0ADescreva%20aqui%20sua%20ideia%2Fnecessidade%3A%0A%0A---%0AEnviado%20pelas%20Ferramentas%20KODAROS">Solicitar orçamento</a>
+      </div>
+    </aside>
   </div>
   <div class="scroll-indicator">
     <div class="scroll-line"></div>
@@ -125,6 +138,7 @@
   <!-- ============ TAB 1: AQUISIÇÃO & TRÁFEGO ============ -->
   <section class="tab-panel active" id="aquisicao" role="tabpanel" aria-labelledby="tab-aquisicao">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Aquisição &amp; Tráfego</h2>
       <p>Medir saúde do funil, escala e eficiência de mídia paga.</p>
       <span class="panel-cite">Referência: Arquitetura de Aquisição · Tráfego Que Vende</span>
@@ -134,7 +148,7 @@
       <!-- 1. CAC & LTV (portado) -->
       <article class="tool">
         <div class="tool-head"><span class="tool-num">1</span>
-          <div><h3>CAC &amp; LTV</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
+          <div><h3>CAC/LTV</h3><span class="tool-ebook">Arquitetura de Aquisição</span></div></div>
         <p class="tool-desc">Custo de aquisição, valor do cliente e se a relação está saudável (alvo LTV:CAC de 3:1).</p>
         <div class="field row">
           <div class="field"><label>Gasto em aquisição (R$)</label><input id="c1_gasto" type="number" value="5000"></div>
@@ -152,6 +166,7 @@
             <div class="res" id="c1_ratio_box"><span class="v" id="c1_ratio">–</span><span class="l">LTV:CAC</span></div>
             <div class="res"><span class="v" id="c1_pay">–</span><span class="l">Payback (meses)</span></div>
           </div>
+          <div class="sens-wrap" id="c1_sens" hidden></div>
         </div>
       </article>
 
@@ -408,6 +423,7 @@
   <!-- ============ TAB 2: LANÇAMENTO ============ -->
   <section class="tab-panel" id="lancamento" role="tabpanel" aria-labelledby="tab-lancamento">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Lançamento</h2>
       <p>Planeje a timeline e simule a receita do seu lançamento.</p>
       <span class="panel-cite">Referência: Lançamento Milionário</span>
@@ -527,6 +543,7 @@
   <!-- ============ TAB 3: FINANCEIRO ============ -->
   <section class="tab-panel" id="financeiro" role="tabpanel" aria-labelledby="tab-financeiro">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Financeiro</h2>
       <p>Precifique certo, projete o caixa e dimensione o capital de giro.</p>
       <span class="panel-cite">Referência: 10 Pilares do Controle Financeiro</span>
@@ -549,7 +566,9 @@
           <div class="res-grid">
             <div class="res good"><span class="v" id="pr_preco">–</span><span class="l">Preço sugerido (R$)</span></div>
             <div class="res"><span class="v" id="pr_lucro">–</span><span class="l">Lucro/un. (R$)</span></div>
+            <div class="res"><span class="v" id="pr_markup">–</span><span class="l">Markup (%)</span></div>
           </div>
+          <p class="cmp-note" id="pr_cmp"></p>
         </div>
       </article>
 
@@ -567,7 +586,9 @@
           <div class="res-grid">
             <div class="res" id="ml_box"><span class="v" id="ml_marg">–</span><span class="l">Margem (%)</span></div>
             <div class="res"><span class="v" id="ml_lucro">–</span><span class="l">Lucro (R$)</span></div>
+            <div class="res"><span class="v" id="ml_markup">–</span><span class="l">Markup (%)</span></div>
           </div>
+          <p class="cmp-note" id="ml_cmp"></p>
         </div>
       </article>
 
@@ -583,6 +604,7 @@
           <div class="field"><label>Meses</label><input id="fc_mes" type="number" value="6"></div>
         </div>
         <button class="btn btn-primary" onclick="calcFluxo()">Projetar</button>
+        <button class="btn btn-ghost" onclick="exportFluxoCSV()" hidden id="fc_csv_btn">Exportar CSV</button>
         <div class="result" id="fc_res">
           <table class="tbl" id="fc_tbl"><thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Saldo</th></tr></thead><tbody></tbody></table>
         </div>
@@ -693,6 +715,7 @@
   <!-- ============ TAB 4: VENDAS ============ -->
   <section class="tab-panel" id="vendas" role="tabpanel" aria-labelledby="tab-vendas">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Vendas</h2>
       <p>Defina metas, simule descontos e descubra o ticket médio ideal.</p>
       <span class="panel-cite">Referência: Venda Mais Hoje</span>
@@ -844,6 +867,7 @@
   <!-- ============ TAB 5: SUPORTE ============ -->
   <section class="tab-panel" id="suporte" role="tabpanel" aria-labelledby="tab-suporte">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Suporte &amp; Transformação</h2>
       <p>Meça satisfação, responda reclamações e garanta o SLA.</p>
       <span class="panel-cite">Referência: Transforme Reclamações em Vendas</span>
@@ -966,6 +990,7 @@
   <!-- ============ TAB 6: OPERAÇÃO ============ -->
   <section class="tab-panel" id="operacao" role="tabpanel" aria-labelledby="tab-operacao">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Operação &amp; Gestão</h2>
       <p>Audite a semana, planeje OKRs e priorize com Pareto/Eisenhower.</p>
       <span class="panel-cite">Referência: 10 Pilares da Gestão Empresarial</span>
@@ -1114,6 +1139,7 @@
   <!-- ============ TAB 7: CONTEÚDO & MARKETING ============ -->
   <section class="tab-panel" id="conteudo" role="tabpanel" aria-labelledby="tab-conteudo">
     <div class="panel-head">
+      <div class="rule-top"></div>
       <h2>Conteúdo &amp; Marketing</h2>
       <p>Planeje sua presença, meça o ROI de conteúdo e baixe peças prontas.</p>
       <span class="panel-cite">Referência: Use Seu Site Para Escalar Sua Empresa</span>
@@ -1223,15 +1249,25 @@
 
 </main>
 
-<footer class="site-footer">
+<footer class="footer">
   <div class="container">
-    <div class="brand-row">
-      <img src="kodaros_logo.png" alt="KODAROS" width="120" height="24" loading="lazy">
-      <span class="word">FERRAMENTAS</span>
+    <a class="footer-banner" href="#inicio" aria-label="KODAROS — voltar ao início"><img src="banner.png" alt="KODAROS" height="84" loading="lazy"></a>
+    <p class="footer-tag">Ferramentas de gestão, aquisição e vendas para quem toca negócio de verdade.</p>
+    <nav class="footer-lines" aria-label="Mapa do site">
+      <a href="#inicio">Início</a><span class="sep">·</span>
+      <a href="#aquisicao">Aquisição</a><span class="sep">·</span>
+      <a href="#lancamento">Lançamento</a><span class="sep">·</span>
+      <a href="#financeiro">Financeiro</a><span class="sep">·</span>
+      <a href="#vendas">Vendas</a><span class="sep">·</span>
+      <a href="#suporte">Suporte</a><span class="sep">·</span>
+      <a href="#operacao">Gestão</a><span class="sep">·</span>
+      <a href="#conteudo">Conteúdo</a><span class="sep">·</span>
+      <a href="https://kelvinoliveiracode.github.io/KodarosLanding/" target="_blank" rel="noopener">Plataforma KODAROS</a>
+    </nav>
+    <div class="footer-bottom">
+      <p>Sem coleta de dados pessoais. Métricas anônimas em localStorage (<code>kodaros_events</code>). <a href="#" onclick="localStorage.clear(); alert('Dados locais limpos.'); return false;">Limpar dados locais</a></p>
+      <p>© <span id="footer-year">2026</span> KODAROS. Todos os direitos reservados.</p>
     </div>
-    <p>KODAROS · Ferramentas gratuitas e citáveis nos e-books · 100% client-side, sem IA.<br>
-    Conheça a biblioteca de e-books na <a href="https://kelvinoliveiracode.github.io/plataforma-kodaros/" target="_blank" rel="noopener">Plataforma KODAROS</a> · <a href="https://kelvinoliveiracode.github.io/kodarosferramentas/sitemap.xml">sitemap</a></p>
-    <p style="margin-top:10px; font-size:0.78rem; color:var(--color-text-dim)">Sem coleta de dados pessoais. Métricas anônimas em localStorage (<code>kodaros_events</code>). <a href="#" onclick="localStorage.clear(); alert('Dados locais limpos.'); return false;">Limpar dados locais</a></p>
   </div>
 </footer>
 </div>

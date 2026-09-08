@@ -1,16 +1,18 @@
 /* KODAROS FERRAMENTAS — Service Worker (offline-first) */
-const CACHE = 'kodaros-tools-v4';
+const CACHE = 'kodaros-tools-v5';
 const CORE = [
   './',
   'index.html',
   'style.css',
   'script.js',
   'manifest.json',
-  'kodaros_logo.png',
   'kodaros_icon.png',
   'icon-192.png',
   'icon-512.png',
-  'icon-512-maskable.png'
+  'icon-512-maskable.png',
+  'bust.png',
+  'banner.png',
+  'bg-salao.jpg'
 ];
 
 self.addEventListener('install', function(e){

@@ -12,6 +12,64 @@ function num(n, d=1){
   return n.toLocaleString('pt-BR',{minimumFractionDigits:0, maximumFractionDigits:d});
 }
 function pct(n){ return num(n,1) + '%'; }
+
+/* ---------- Fonte única de verdade das ferramentas (contagens, favoritos, busca) ---------- */
+var KODAROS_TOOLS=[
+{id:"tool-cac-ltv",nome:"CAC/LTV",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-projetor-de-escala",nome:"Projetor de Escala",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-auditor-de-funil",nome:"Auditor de Funil",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-roi-de-trafego-pago-roas",nome:"ROI de Tráfego Pago / ROAS",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-ponto-de-equilibrio-de-campanha",nome:"Ponto de Equilíbrio de Campanha",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-conversor-de-metricas-de-midia",nome:"Conversor de Métricas de Mídia",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-planejador-de-orcamento-por-canal",nome:"Planejador de Orçamento por Canal",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-utm-builder",nome:"UTM Builder",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-auditor-de-landing-page-cro",nome:"Auditor de Landing Page (CRO)",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-cpl-ideal-baseado-no-ltv",nome:"CPL Ideal (baseado no LTV)",cat:"aquisicao",ebook:"Arquitetura de Aquisição"},
+{id:"tool-gerador-de-ad-copy",nome:"Gerador de Ad Copy",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-simulador-a-b-de-criativos",nome:"Simulador A/B de Criativos",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-recuperacao-de-carrinho",nome:"Recuperação de Carrinho",cat:"aquisicao",ebook:"Tráfego Que Vende"},
+{id:"tool-cronograma-de-lancamento",nome:"Cronograma de Lançamento",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-simulador-de-receita-de-lancamento",nome:"Simulador de Receita de Lançamento",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-calculadora-de-oferta",nome:"Calculadora de Oferta",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-cronograma-invertido",nome:"Cronograma Invertido",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-custo-por-inscrito-cpe",nome:"Custo por Inscrito (CPE)",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-sequencia-de-e-mails-de-lancamento",nome:"Sequência de E-mails de Lançamento",cat:"lancamento",ebook:"Lançamento Milionário"},
+{id:"tool-calculadora-de-precificacao",nome:"Calculadora de Precificação",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-margem-de-lucro",nome:"Margem de Lucro",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-fluxo-de-caixa-projetado",nome:"Fluxo de Caixa Projetado",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-capital-de-giro-necessario",nome:"Capital de Giro Necessário",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-ponto-de-equilibrio-financeiro",nome:"Ponto de Equilíbrio Financeiro",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-juros-compostos-patrimonio",nome:"Juros Compostos / Patrimônio",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-pro-labore-vs-distribuicao-de-lucros",nome:"Pró-labore vs Distribuição de Lucros",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-mrr-arr-de-assinaturas",nome:"MRR / ARR de Assinaturas",cat:"financeiro",ebook:"10 Pilares do Controle Financeiro"},
+{id:"tool-metas-de-vendas",nome:"Metas de Vendas",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-simulador-de-desconto",nome:"Simulador de Desconto",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-ticket-medio-necessario",nome:"Ticket Médio Necessário",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-script-de-abordagem-por-objecao",nome:"Script de Abordagem por Objeção",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-funil-de-vendas-simples",nome:"Funil de Vendas Simples",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-planner-de-follow-up",nome:"Planner de Follow-up",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-churn-retencao",nome:"Churn & Retenção",cat:"vendas",ebook:"Venda Mais Hoje"},
+{id:"tool-indice-de-reclamacoes-nps",nome:"Índice de Reclamações / NPS",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-gerador-de-resposta-a-reclamacao",nome:"Gerador de Resposta a Reclamação",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-calculadora-de-tempo-de-resposta-sla",nome:"Calculadora de Tempo de Resposta (SLA)",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-gerador-de-pesquisa-de-satisfacao-csat",nome:"Gerador de Pesquisa de Satisfação (CSAT)",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-calculadora-de-valor-recuperado",nome:"Calculadora de Valor Recuperado",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-gerador-de-resposta-publica",nome:"Gerador de Resposta Pública",cat:"suporte",ebook:"Transforme Reclamações em Vendas"},
+{id:"tool-checklist-de-auditagem-semanal-ritual-m3",nome:"Checklist de Auditagem Semanal (ritual M3)",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-planejador-de-metas-okr",nome:"Planejador de Metas (OKR)",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-matriz-de-priorizacao-pareto-eisenhower",nome:"Matriz de Priorização (Pareto + Eisenhower)",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-matriz-swot",nome:"Matriz SWOT",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-hora-faturavel-ideal",nome:"Hora Faturável Ideal",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-decompositor-de-metas-anuais",nome:"Decompositor de Metas Anuais",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-roi-de-automacao",nome:"ROI de Automação",cat:"operacao",ebook:"10 Pilares da Gestão Empresarial"},
+{id:"tool-calendario-editorial",nome:"Calendário Editorial",cat:"conteudo",ebook:"Use Seu Site Para Escalar"},
+{id:"tool-roi-de-conteudo",nome:"ROI de Conteúdo",cat:"conteudo",ebook:"Use Seu Site Para Escalar"},
+{id:"tool-checklist-seo-on-page",nome:"Checklist SEO On-page",cat:"conteudo",ebook:"Use Seu Site Para Escalar"},
+{id:"tool-template-cartao-de-visita",nome:"Template: Cartão de Visita",cat:"conteudo",ebook:"Editável"},
+{id:"tool-template-post-para-instagram",nome:"Template: Post para Instagram",cat:"conteudo",ebook:"Editável"},
+{id:"tool-template-cupom-oferta",nome:"Template: Cupom / Oferta",cat:"conteudo",ebook:"Editável"},
+];
+function toolsCount(){ return KODAROS_TOOLS.length; }
 function show(el){ document.getElementById(el).classList.add('show'); }
 function val(id){ return document.getElementById(id).value; }
 function numv(id){ return parseFloat(document.getElementById(id).value) || 0; }
@@ -53,7 +111,34 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
     }
   });
 });
+// badges de contagem por categoria (fonte: KODAROS_TOOLS)
+(function initTabBadges(){
+  if(!Array.isArray(window.KODAROS_TOOLS)) return;
+  document.querySelectorAll('.tab-btn').forEach(function(btn){
+    const n = window.KODAROS_TOOLS.filter(function(t){ return t.cat===btn.dataset.tab; }).length;
+    if(!n) return;
+    const b=document.createElement('span');
+    b.className='tab-badge';
+    b.setAttribute('aria-hidden','true');
+    b.textContent=String(n);
+    btn.appendChild(b);
+  });
+})();
 // init from hash
+// scroll-spy: destaca a categoria conforme o painel entra na viewport
+(function initScrollSpy(){
+  const btns=[...document.querySelectorAll('.tab-btn')];
+  if(!btns.length || !('IntersectionObserver' in window)) return;
+  const panels=btns.map(b=>document.getElementById(b.dataset.tab)).filter(Boolean);
+  const io=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting && en.intersectionRatio>=0.4){
+        btns.forEach(function(b){ const on=b.dataset.tab===en.target.id; b.classList.toggle('spy',on); });
+      }
+    });
+  },{rootMargin:'-30% 0px -55% 0px', threshold:[0.4]});
+  panels.forEach(function(p){ io.observe(p); });
+})();
 (function initHash(){
   const raw = location.hash.slice(1).split('/')[0];
   const valid = ['aquisicao','lancamento','financeiro','vendas','suporte','operacao','conteudo'];
@@ -139,6 +224,22 @@ window.addEventListener('hashchange', function(){
       }
       tool.appendChild(actions);
     }
+    // copiar valor individual de cada métrica exibida
+    if(!tool.dataset.copyInit){
+      tool.dataset.copyInit='1';
+      tool.querySelectorAll('.result .res .v').forEach(function(v){
+        if(v.dataset.copyBound) return; v.dataset.copyBound='1';
+        v.classList.add('v-copy');
+        v.title='Clique para copiar';
+        v.addEventListener('click', function(){
+          const txt=(v.textContent||'').trim();
+          navigator.clipboard.writeText(txt).then(function(){
+            v.classList.add('copied');
+            setTimeout(function(){ v.classList.remove('copied'); }, 1200);
+          }).catch(function(){});
+        });
+      });
+    }
   });
   // handle initial tool hash
   const partsInit = location.hash.slice(1).split('/');
@@ -171,6 +272,21 @@ window.addEventListener('hashchange', function(){
       if(!q) meta.textContent='';
       else meta.textContent = shown + ' de ' + total + ' ferramentas';
     }
+    let empty=document.getElementById('searchEmpty');
+    if(!empty){
+      empty=document.createElement('div');
+      empty.id='searchEmpty';
+      empty.className='search-empty';
+      empty.setAttribute('role','status');
+      const mainEl=document.querySelector('main');
+      if(mainEl) mainEl.appendChild(empty);
+    }
+    if(q && !shown){
+      const safe=input.value.trim().replace(/[<>&]/g,'');
+      empty.innerHTML='Nenhuma ferramenta encontrada para “'+safe+'”. <button type="button" class="btn btn-ghost btn-sm" id="searchClear">Limpar busca</button>';
+      const clr=document.getElementById('searchClear');
+      if(clr) clr.addEventListener('click', function(){ input.value=''; input.dispatchEvent(new Event('input')); input.focus(); });
+    } else { empty.innerHTML=''; }
     // if searching, show all panels to reveal matches; otherwise restore active tab only
     if(q){
       document.querySelectorAll('.tab-panel').forEach(function(p){
@@ -442,12 +558,12 @@ function exportToolResult(toolId, btn){
     const W=900, H= 220 + lines.length*26;
     c.width=W; c.height=Math.min(H, 1800);
     const x=c.getContext('2d');
-    x.fillStyle='#0B0F1A'; x.fillRect(0,0,W,c.height);
+    x.fillStyle='#070709'; x.fillRect(0,0,W,c.height);
     x.strokeStyle='rgba(255,255,255,0.08)'; x.strokeRect(16,16,W-32,c.height-32);
     x.fillStyle='#E6E8EE'; x.font='700 22px Figtree, Arial, sans-serif';
     x.fillText(h3, 32, 48);
     x.fillStyle='#9AA3B8'; x.font='500 13px Figtree, Arial, sans-serif';
-    x.fillText('KODAROS • kodarosferramentas', 32, 70);
+    x.fillStyle='#D4AF6A'; x.fillText('KODAROS • FERRAMENTAS', 32, 70);
     x.fillStyle='#E6E8EE'; x.font='400 15px Figtree, Arial, sans-serif';
     let y=110;
     x.textBaseline='top';
@@ -689,6 +805,21 @@ function calcCAC(){
   document.getElementById('c1_pay').textContent=num(pay);
   const box=document.getElementById('c1_ratio_box');
   box.className='res '+(ratio>=3?'good':(ratio<1?'bad':''));
+  // sensibilidade: LTV:CAC variando ticket e retenção ±20%
+  const sens=document.getElementById('c1_sens');
+  if(sens){
+    const lines=[];
+    [-20,0,20].forEach(dt=>{
+      const row=[-20,0,20].map(dr=>{
+        const t2=ticket*(1+dt/100), r2=ret*(1+dr/100);
+        const ltv2=t2*freq*(r2/12);
+        return num(ltv2/cac,1)+':1';
+      });
+      lines.push('<tr><td>'+(dt>0?'+':'')+dt+'%</td><td>'+row[0]+'</td><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>');
+    });
+    sens.hidden=false;
+    sens.innerHTML='<table class="tbl sens"><thead><tr><th>Ticket \u2193 \u00b7 Retenção \u2192</th><th>-20%</th><th>base</th><th>+20%</th></tr></thead><tbody>'+lines.join('')+'</tbody></table><p class="sens-note">LTV:CAC em cada cenário — saudável quando \u2265 3:1.</p>';
+  }
   show('c1_res');
 }
 
@@ -928,6 +1059,12 @@ function calcPrecificacao(){
   const preco=(custo+fixo)/denom;
   document.getElementById('pr_preco').textContent=brl(preco);
   document.getElementById('pr_lucro').textContent=brl(preco-custo-fixo);
+  // markup sobre o custo total + comparação didática
+  const custoTot=custo+fixo;
+  const markup=custoTot>0 ? (preco-custoTot)/custoTot*100 : 0;
+  document.getElementById('pr_markup').textContent=pct(markup);
+  const cmp=document.getElementById('pr_cmp');
+  if(cmp) cmp.innerHTML='Markup '+pct(markup)+' \u2260 margem '+pct(marg*100)+': o markup incide sobre o <b>custo</b> ('+brl(custoTot)+'), a margem sobre o <b>preço</b> ('+brl(preco)+').';
   show('pr_res');
 }
 
@@ -938,6 +1075,10 @@ function calcMargem(){
   const m=(preco-custo)/preco*100;
   document.getElementById('ml_marg').textContent=pct(m);
   document.getElementById('ml_lucro').textContent=brl(preco-custo);
+  const mk=custo>0 ? (preco-custo)/custo*100 : Infinity;
+  document.getElementById('ml_markup').textContent=isFinite(mk)?pct(mk):'–';
+  const cmp2=document.getElementById('ml_cmp');
+  if(cmp2) cmp2.innerHTML='Margem '+pct(m)+' sobre o preço \u2260 markup '+pct(mk)+' sobre o custo. Mesmo lucro, números diferentes — cite o certo no material.';
   document.getElementById('ml_box').className='res '+(m>=30?'good':(m<0?'bad':''));
   show('ml_res');
 }
@@ -958,7 +1099,26 @@ function calcFluxo(){
     if(saldo<0) tr.classList.add('gargalo');
     tb.appendChild(tr);
   }
+  const csvBtn=document.getElementById('fc_csv_btn'); if(csvBtn) csvBtn.hidden=false;
   show('fc_res');
+}
+function exportFluxoCSV(){
+  const meses=Math.max(1,Math.round(numv('fc_mes')));
+  const rows=[['Mês','Entradas (R$)','Saídas (R$)','Saldo (R$)']];
+  let saldo=numv('fc_ini');
+  rows.push(['0', '—', '—', brl(saldo)]);
+  for(let i=1;i<=meses;i++){
+    saldo=saldo+numv('fc_ent')-numv('fc_sai');
+    rows.push([String(i), brl(numv('fc_ent')), brl(numv('fc_sai')), brl(saldo)]);
+  }
+  const csv='\uFEFF'+rows.map(r=>r.map(c=>'"'+c+'"').join(';')).join('\r\n');
+  const blob=new Blob([csv], {type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.download='kodaros-fluxo-de-caixa.csv';
+  a.href=URL.createObjectURL(blob);
+  a.click();
+  URL.revokeObjectURL(a.href);
+  trackEvent('export_csv', {tool:'fluxo-de-caixa'});
 }
 
 /* 4. Capital de Giro */
@@ -1389,7 +1549,10 @@ function calcSEO(){
 /* =========================================================
    MÓDULOS DE IDENTIDADE VISUAL (espelham o site principal)
    ========================================================= */
-document.addEventListener('DOMContentLoaded', function() {
+function initKodarosIdentity() {
+  if (!window.matchMedia) window.matchMedia = function(){ return { matches:false, addEventListener:function(){}, removeEventListener:function(){}, addListener:function(){}, removeListener:function(){} }; };
+  const fy = document.getElementById('footer-year');
+  if (fy) fy.textContent = String(new Date().getFullYear());
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
   let isTabActive = true;
   document.addEventListener('visibilitychange', () => { isTabActive = !document.hidden; });
@@ -1448,6 +1611,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /* ---- SCROLL REVEAL ---- */
   (function initReveal() {
+    if (!('IntersectionObserver' in window)) { document.querySelectorAll('.panel-head, .tool').forEach(function(el){ el.classList.add('active'); }); return; }
     const els = document.querySelectorAll('.panel-head, .tool');
     const obs = new IntersectionObserver((entries) => {
       entries.forEach(en => {
@@ -1464,7 +1628,133 @@ document.addEventListener('DOMContentLoaded', function() {
   // GALÁXIA removida — identidade unificada à plataforma (pedra -> ouro)
   // MAGNETIC BUTTONS removido - botões fixos
   // CURSOR GLOW removido
-});
+
+  /* ---- PARTÍCULAS DOURADAS — diagonais dos cantos inferiores ---- */
+  (function initGoldenParticles() {
+    const canvas = document.getElementById('particles-canvas');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let dpr = window.devicePixelRatio || 1;
+    let W = 0, H = 0, particles = [];
+    const COUNT = window.innerWidth < 720 ? 40 : 90;
+    const GOLD = ['212,175,106', '232,201,154', '184,148,79', '201,168,92'];
+    function rand(a, b) { return a + Math.random() * (b - a); }
+    function createParticle() {
+      const fromLeft = Math.random() < 0.5;
+      return {
+        x: fromLeft ? rand(-50, W * 0.25) : rand(W * 0.75, W + 50),
+        y: H + rand(0, 80),
+        r: rand(0.6, 2.4),
+        vx: fromLeft ? rand(0.25, 0.7) : rand(-0.7, -0.25),
+        vy: rand(-0.5, -1.2),
+        o: rand(0.15, 0.55),
+        c: GOLD[(Math.random() * GOLD.length) | 0],
+        wobble: rand(0, Math.PI * 2),
+        wobbleSpeed: rand(0.005, 0.02)
+      };
+    }
+    function resize() {
+      W = window.innerWidth; H = window.innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      particles = [];
+      for (let i = 0; i < COUNT; i++) {
+        const p = createParticle();
+        p.x = rand(-20, W); p.y = rand(0, H);
+        particles.push(p);
+      }
+    }
+    function frame() {
+      if (!isTabActive) { requestAnimationFrame(frame); return; }
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        p.wobble += p.wobbleSpeed;
+        p.x += p.vx + Math.sin(p.wobble) * 0.3;
+        p.y += p.vy;
+        p.o -= 0.0004;
+        if (p.y < -10 || p.x > W + 20 || p.x < -20 || p.o <= 0) Object.assign(p, createParticle());
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + p.c + ',' + Math.max(p.o, 0).toFixed(3) + ')';
+        ctx.fill();
+      });
+      requestAnimationFrame(frame);
+    }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    frame();
+  })();
+
+  /* ---- PARTÍCULAS BASE (id="particles") — pó de pedra sutil ---- */
+  (function initBaseParticles() {
+    const canvas = document.getElementById('particles');
+    if (!canvas || !canvas.getContext) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const COUNT = 28;
+    const COLORS = ['59,91,254', '197,164,106', '154,163,184'];
+    let dots = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize, { passive: true });
+    resize();
+    for (let i = 0; i < COUNT; i++) {
+      dots.push({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        r: 0.8 + Math.random() * 2.2,
+        vx: (Math.random() - 0.5) * 0.22, vy: (Math.random() - 0.5) * 0.22,
+        c: COLORS[i % COLORS.length], o: 0.08 + Math.random() * 0.16
+      });
+    }
+    function frame() {
+      if (!isTabActive) { requestAnimationFrame(frame); return; }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      dots.forEach(d => {
+        d.x += d.vx; d.y += d.vy;
+        if (d.x < -10) d.x = canvas.width + 10;
+        if (d.x > canvas.width + 10) d.x = -10;
+        if (d.y < -10) d.y = canvas.height + 10;
+        if (d.y > canvas.height + 10) d.y = -10;
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + d.c + ',' + d.o + ')';
+        ctx.fill();
+      });
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
+
+  /* ---- TABS: badges por categoria (idempotente) ---- */
+  (function initTabBadgesInInit(){
+    if(!Array.isArray(window.KODAROS_TOOLS)) return;
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      if(btn.querySelector('.tab-badge')) return;
+      const n = window.KODAROS_TOOLS.filter(function(t){ return t.cat===btn.dataset.tab; }).length;
+      if(!n) return;
+      const b=document.createElement('span');
+      b.className='tab-badge';
+      b.setAttribute('aria-hidden','true');
+      b.textContent=String(n);
+      btn.appendChild(b);
+    });
+  })();
+
+  /* ---- FICHAS: numeração contínua 01–53 + réguas ---- */
+  (function initToolNumbers() {
+    const fc = document.getElementById('ficha-count');
+    if (fc && Array.isArray(window.KODAROS_TOOLS)) fc.textContent = String(window.KODAROS_TOOLS.length);
+    const nums = document.querySelectorAll('.tool-num');
+    nums.forEach((el, i) => { el.textContent = String(i + 1).padStart(2, '0'); });
+  })();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initKodarosIdentity);
+} else {
+  initKodarosIdentity();
+}
 
 /* =========================================================
    TEMPLATES EDITÁVEIS (cartão, post, cupom) — baixar PNG
@@ -1486,7 +1776,7 @@ document.addEventListener('DOMContentLoaded', function() {
     lines.forEach((l,i)=>ctx.fillText(l, cx, startY+i*lh));
   }
   function renderCartao(){
-    const c=document.getElementById('cartao_canvas'); if(!c) return; const x=c.getContext('2d');
+    const c=document.getElementById('cartao_canvas'); if(!c) return; const x=c.getContext && c.getContext('2d'); if(!x) return;
     const W=c.width, H=c.height;
     x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
     x.strokeStyle='rgba(255,255,255,0.35)'; x.lineWidth=2; x.strokeRect(28,28,W-56,H-56);
@@ -1502,7 +1792,7 @@ document.addEventListener('DOMContentLoaded', function() {
     x.fillText(val('cartao_site')||'', 70, 380);
   }
   function renderPost(){
-    const c=document.getElementById('post_canvas'); if(!c) return; const x=c.getContext('2d');
+    const c=document.getElementById('post_canvas'); if(!c) return; const x=c.getContext && c.getContext('2d'); if(!x) return;
     const W=c.width, H=c.height;
     x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
     x.strokeStyle='rgba(255,255,255,0.25)'; x.lineWidth=3; x.strokeRect(40,40,W-80,H-80);
@@ -1515,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', function() {
     x.textAlign='left';
   }
   function renderCupom(){
-    const c=document.getElementById('cupom_canvas'); if(!c) return; const x=c.getContext('2d');
+    const c=document.getElementById('cupom_canvas'); if(!c) return; const x=c.getContext && c.getContext('2d'); if(!x) return;
     const W=c.width, H=c.height;
     x.fillStyle='#0A0A0A'; x.fillRect(0,0,W,H);
     x.strokeStyle='rgba(255,255,255,0.3)'; x.lineWidth=3; x.strokeRect(40,40,W-80,H-80);
