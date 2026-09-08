@@ -1,0 +1,12 @@
+{
+  "name": "kodaros-ferramentas-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Smoke test das Ferramentas KODAROS (jsdom)",
+  "scripts": {
+    "test": "node smoke.js"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
+}
