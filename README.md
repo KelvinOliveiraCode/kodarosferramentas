@@ -169,7 +169,7 @@ node tests/smoke.js
 **Kelvin Oliveira**
 
 - GitHub: [KelvinOliveiraCode](https://github.com/KelvinOliveiraCode)
-- LinkedIn: [kelvin-oliveira-0282033b4](https://www.linkedin.com/in/kelvin-oliveira-0282033b4/)
+- LinkedIn: [kelvin-oliveira-code](https://www.linkedin.com/in/kelvin-oliveira-code/)
 
 ## Licença
 
